@@ -1,0 +1,7 @@
+1) Create a histogram to see how many buildings are there in each occupancy range. Ex- 0-10%, 10-20%, and so on. If 0-10% is negligible compared to other buildings, the assumption is probably right. But then also, we might have to see if low occupancy bulidngs are juts green ones or both since that might indicate something.
+
+2) How good is the median for the indicator of price?
+ 
+3) How much do other factors affect price and occupancy?
+
+
