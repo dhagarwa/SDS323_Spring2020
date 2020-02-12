@@ -1,4 +1,11 @@
+---
+title: "solution"
+author: "Dhwanit"
+date: "2/11/2020"
+output: html_document
+---
 
+```{r}
 library(mosaic)
 library(tidyverse)
 library("ggplot2")
@@ -11,7 +18,7 @@ quantile(gb$leasing_rate, probs=c(0.01, 0.05, 0.1, 0.15, 0.2)) # to get an idea 
 #Occupancy levels by green or non green
 
 ##Plotting the data to assess the occupancy levels
-par(mfrow = c(5, 2)) # Create a 2 x 2 plotting matrix
+#par(mfrow = c(5, 2)) # Create a 2 x 2 plotting matrix
 hist(gb$leasing_rate, xlab="Occupancy level", main="Occupancy level histogram", col="blue") #plot histogram of occupancy level in percentage
 
 #boxplot(gb$leasing_rate,col = "lightgray", main = "Occupancy levels box plot", outline=TRUE)
@@ -50,8 +57,11 @@ plot(gb_nongreen$stories, gb_nongreen$leasing_rate,  main = "Occupancy levels by
 ggplot(data = gb) +
   geom_point(mapping = aes(y = leasing_rate, x= stories), col="blue") +
   stat_summary(aes(y = leasing_rate,x=stories), fun.y=median, colour="red", geom="line",group=1) +
-  labs(title="Catter plot for occupanyc level by stories")
+  labs(title="Scatter plot for occupancy level by stories with median level indicated in red")
   
 
 
+
+
+```
 
