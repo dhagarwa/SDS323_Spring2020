@@ -1,0 +1,38 @@
+---
+title: "creatinine"
+author: "Bao Doquang"
+date: "2/13/2020"
+output: html_document
+---
+
+```{r message=FALSE}
+library(mosaic)
+library(tidyverse)
+creatinine = read.csv('../data/creatinine.csv')
+
+lm1 = lm(creatclear ~ age, data = creatinine)
+new_data = data.frame(age = c(55, 40, 60))
+predict(lm1, new_data)
+```
+(1) After using the predict function on the linear model taken from the data, at Age = 55, we can expect a creatinine clearence rate of about 113.7.
+```{r message=FALSE}
+coef(lm1)
+```
+(2) When using the coefficient function on our linear model, we see a negative coefficient on the age variable, and can extrapolate that with every additional year a person ages, we can expect a decrease in creatinine clearence rate of .6198 ml/minute per year. 
+```{r message=FALSE}
+summary(lm1)
+135-123.0203
+112-110.6240
+```
+(3) We Can subtract our predicted creatinine clearence rate, for each age, from our actual rate to determine the residuals for each individual. From this basic subtraction we see that the 40 year old has a positive residual of 11.9797 and the 60 year old hasa positive residual of 1.376. We can say that the 40 year old is healthier because they have a greater positive residual, and having a higher creatinine clearence rate is better.
+
+```{r message=FALSE}
+ggplot(data = creatinine) + 
+  geom_point(mapping = aes(x = age, y = creatclear)) + 
+  geom_abline(intercept = coef(lm1)[1] , slope = coef(lm1)[2], color="red")+
+  labs(title = "Creatinine Clearing Rate Decreasing with Age") +
+  labs(
+    y = "Creatinine Clearing Rate (ml/min)",
+    x = "Age (yrs)")
+
+```

@@ -2,7 +2,9 @@
 title: "solution"
 author: "Dhwanit"
 date: "2/11/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 
@@ -11,19 +13,25 @@ output: html_document
 library(mosaic)
 library(tidyverse)
 library("ggplot2")
+```
+
+
+
+```{r message = FALSE}
 #Reading the data
 gb = read.csv('../data/greenbuildings.csv')
 #summary(gb);
 str(gb)
 #quantile(gb$leasing_rate, probs=c(0.01, 0.05, 0.1, 0.15, 0.2)) # to get an idea of quantiles
+```
+1)Occupancy levels plot. Note for all the plots below, blue plots are for all buildings, green for only green buildings and red are for non green buildings.  
+1.1) We verify that the below 10% occupancy level buildings are not significant. The median occupancy level is 89% for non green buildings while 93% for green. Box plot gives  good confidence to  the expectation of 90% occupancy level.
 
-#Occupancy levels by green or non green
-
-##Plotting the data to assess the occupancy levels
+```{r message=FALSE}
 par(mfrow = c(2, 2)) # Create a 2 x 2 plotting matrix
 hist(gb$leasing_rate, xlab="Occupancy level", main="Occupancy level histogram", col="blue") #plot histogram of occupancy level in percentage
 
-#boxplot(gb$leasing_rate,col = "lightgray", main = "Occupancy levels box plot", outline=TRUE)
+
 
 ##Now plotting only green buildings occupancy level
 
@@ -41,33 +49,51 @@ gb_nongreen = gb %>% filter(gb$green_rating < 0.5)
 hist(gb_nongreen$leasing_rate, xlab="Non-green buildings occupancy level", main="Non-green buildings occupancy level histogram", col="red") #plot histogram of occupancy level in percentage
 
 boxplot(gb$leasing_rate, gb_green$leasing_rate, gb_nongreen$leasing_rate, names=c("All", "green", "non-green"), col = c("blue", "green", "red"), main = "Occupancy levels box plot", outline=TRUE)
+```
 
+2)Occupancy levels by cluster id
 
+2.1) Since the building's location is specified, it is important to see if the occupancy rate depends on the location. The plot shows similar distribution for all clusters, indicating negligible dependency of occupancy based on the location. 
 
-#Occupancy levels by cluster id 
-
-
+```{r message=FALSE}
 plot(gb$cluster, gb$leasing_rate,  main = "Occupancy levels by cluster", xlab="cluster id", ylab="occupancy level", col="blue")
+# ggplot(data = gb) +
+#   geom_point(mapping = aes(y = leasing_rate, x= cluster), col="blue") +
+#   stat_summary(aes(y = leasing_rate,x=cluster), fun.y=median, colour="red", geom="line",group=1) +
+#   labs(title="Scatter plot for rent by stories")
+```
 
-#occupancy levels by storeys, note the buildind proposed is 15 storey, so it is better to check meadian occupancy for around 15 storey building
-plot(gb$stories, gb$leasing_rate,  main = "Occupancy levels by stories", xlab="stories", ylab="occupancy level", col="blue")
-plot(gb_green$stories, gb_green$leasing_rate,  main = "Green building occupancy ", xlab="stories", ylab="occupancy level", col="green")
 
-plot(gb_nongreen$stories, gb_nongreen$leasing_rate,  main = "Non green buildings occupancy ", xlab="stories", ylab="occupancy level", col="red")
+3)Occupancy levels by storeys
+
+3.1) Note the building proposed is 15 stories, so we check median occupancy for around 15 storey buildings with median level indicated in red. The median leasing rate for 15 storey buildings is slightly more than 75% so while 90% is assumed in the analysis. Even with 75% occupancy, we can recuperate the extra cost in 10.25 years, which is only about 1/3 of expected total lifetime.  
+
+```{r message=FALSE}
+# plot(gb$stories, gb$leasing_rate,  main = "Occupancy levels by stories", xlab="stories", ylab="occupancy level", col="blue")
+# plot(gb_green$stories, gb_green$leasing_rate,  main = "Green building occupancy ", xlab="stories", ylab="occupancy level", col="green")
+# 
+# plot(gb_nongreen$stories, gb_nongreen$leasing_rate,  main = "Non green buildings occupancy ", xlab="stories", ylab="occupancy level", col="red")
 
 ggplot(data = gb) +
   geom_point(mapping = aes(y = leasing_rate, x= stories), col="blue") +
   stat_summary(aes(y = leasing_rate,x=stories), fun.y=median, colour="red", geom="line",group=1) +
   labs(title="Scatter plot for occupancy level by stories with median level indicated in red")
   
+```
 
+4) Rent distribution of green and non green buildings. The median rent of green buildings is higher. For both green and nongreen, the quantiles are close together with outliers mostly having much higher rents. So it is reasonable to assume the rent for green building will be around $2.6 higher than non green ones.  
+
+```{r message=FALSE}
 boxplot(gb$Rent, gb_green$Rent, gb_nongreen$Rent, names=c("All", "green", "non-green"), col = c("blue", "green", "red"), main = "Rent box plot", outline=TRUE)  
+```
 
+5) We also check to see if rent depends on the number of stories. While the data is sparse for higher storey buildings, the median line in red remains at the same level. Hence, we can conclude there is not much dependency of the rent on the number of stories. 
+
+```{r message=FALSE}
 ggplot(data = gb) +
   geom_point(mapping = aes(y = Rent, x= stories), col="blue") +
   stat_summary(aes(y = Rent,x=stories), fun.y=median, colour="red", geom="line",group=1) +
   labs(title="Scatter plot for rent by stories")
-
 
 
 ```
