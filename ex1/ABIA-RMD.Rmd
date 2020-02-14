@@ -1,3 +1,19 @@
+---
+title: "Data visualization: flights at ABIA"
+author: "Bao Doquang, Dhwanit Agarwal, Akksay Singh and Shristi Singh"
+date: "February 14th, 2019"
+output: html_document
+---
+
+We were looking to answer, if someone has to take a flight, what is most likely and ideal (one that minimizes the total delay) and worst conditions to fly. In this regard, we have looked at three parameters: i) the average total delay for a given day of the week, ii) the average total delay for month of the travel, and iii) lastly the average delay based on the departure times of the flight, on any given day.  
+Here Average Total Delay is Sum of all the Delays divided by Number of Parameter, ???(Delays Given)/(Number of Parameter) 
+Data for a given parameter was excluded if any one of the day's delay information was N/A 
+???(Delays Given)= the sum of all the 7 delays given (arrival, departure, security, carrier, weather, late aircraft, and NAS delays)
+So average total delay by day of the week plot was calculated by summing the delays in minutes of each of the flight that took off on that day, divided by the number of that particular day in the dataset.   
+It turns out that flights in September, on Thursdays that depart at 12 to 1 am are on average going to be the least delayed, and 5 to 6 P.M flights in December on Sundays are going to be the most delayed flights. This makes logical sense, in that it is the Christmas and winter break season. People often also prefer to fly on the weekends, and especially in the evenings, as it is often an opportune time to prepare well (e.g pack luggage, drive to the airport, etc). The weather in December is also inclement around the United States, increasing delays as well. Similarly, in direct contraposition, it also makes logical sense that flights on Thursdays in September at 12 - 1 AM get delayed the least. 
+Attempts were made to observe correlations between the average distance of the flights and if that was a factor in determining the expected delay, (i.e do flights that simply fly more, are they delayed more as well?). The average distance travelled by flights (computed using the same methodology as average delay) on any given day was also analyzed. Interestingly, people also took the shortest flights on Thursday as well, but apart from that, no general trend was found. As expected though, people on average took the longest flights on Saturdays. The relevant graphs are given below. 
+
+```{r} 
 library(mosaic)
 library(tidyverse)
 library(knitr)
@@ -74,4 +90,4 @@ ggplot(data=distance, aes(x=DayOfWeek, y=avg.distance)) +
   labs(title= "Average Distance Traveled by Days of the Week", 
        x = "Day of the Week",
        y = "Average Distance (miles)") + coord_flip()
-
+```
