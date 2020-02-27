@@ -1,3 +1,6 @@
+Milk Prices Case Study
+======================
+
 The data in milk.csv contains a random sample of daily sales figures for
 a small neighborhood grocery store of cartons of milk.The "price" column
 gives the price at which the milk was sold that day and the "sales"
