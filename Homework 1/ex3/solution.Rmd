@@ -81,7 +81,7 @@ ggplot(data = gb) +
   
 ```
 
-4) Rent distribution of green and non green buildings. The median rent of green buildings is higher. For both green and nongreen, the quantiles are close together with outliers mostly having much higher rents. So it is reasonable to assume the rent for green building will be around $2.6 higher than non green ones.  
+4) Rent distribution of green and non green buildings. The median rent of green buildings is higher. For both green and nongreen, the quantiles are close together with outliers mostly having much higher rents. So it is reasonable to assume the rent for green building will be around $2.6 higher than non green ones. 
 
 ```{r message=FALSE}
 boxplot(gb$Rent, gb_green$Rent, gb_nongreen$Rent, names=c("All", "green", "non-green"), col = c("blue", "green", "red"), main = "Rent box plot", outline=TRUE)  
