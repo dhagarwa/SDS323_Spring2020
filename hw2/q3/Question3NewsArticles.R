@@ -3,14 +3,13 @@ online_news <- read.csv("~/GitHub/SDS323_Spring2020/hw2/q3/online_news.csv")
 View(online_news)
 str(online_news)
 
-##### Regress first and threshold second
+##### Model 1 Regress first and threshold second
 
 hist(online_news$shares) 
 # We should apply the log transformation since shares is very skewed 
 
 # After log transformation
 hist(log(online_news$shares))
-
 
 # Fitting lasso regression and doing cross validation of K=10 folds to automate finding independent variables and training and testing my data multiple times simultaneously 
 
@@ -55,7 +54,7 @@ confusion_1= table(y = viral, yhat = threshold_viral)
 print(confusion_1)
 sum(diag(confusion_1))/sum(confusion_1) # This gives the sample accuracy for model 1
 
-##### Model 2
+##### Model 2 Threshold first and regress/classify second.
 
 # Running logistic lasso regression and cross validate with viral as the dependent variable
 # family = "binomial" in this code is used to do a logistic regression instead of normal regression
