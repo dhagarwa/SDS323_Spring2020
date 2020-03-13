@@ -2,7 +2,7 @@
 title: "Solution_Q3"
 author: "Shristi, Dhwanit, Bao, Akssay"
 date: "3/12/2020"
-output: pdf_document
+output: md_document
 ---
 
 # Classifying mashable articles as viral and not viral based on given features. 
