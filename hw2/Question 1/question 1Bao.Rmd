@@ -1,10 +1,19 @@
+---
+title: "Untitled"
+author: "Bao Doquang"
+date: "March 12, 2020"
+output: pdf_document
+---
+
+```{r}
+
 library(foreach)
 library(tidyverse)
 library(class)
 library(mosaic)
 library(FNN)
 
-sclass = read.csv('../data/sclass')
+sclass <- read.csv("~/GitHub/SDS323_Spring2020/hw2/Question 1/sclass.csv")
 
 sclass350 = subset(sclass, trim == '350')
 sclass65AMG = subset(sclass, trim == '65 AMG')
@@ -85,3 +94,6 @@ sclass65AMG_test$ypred_finalknn65AMG = ypred_finalknn65AMG
 p_test = ggplot(data = sclass65AMG_test) + 
   geom_point(mapping = aes(x = mileage, y = price), color='lightgrey')
 p_test + geom_point(aes(x = mileage, y = ypred_finalknn65AMG), color='red')
+
+```
+
