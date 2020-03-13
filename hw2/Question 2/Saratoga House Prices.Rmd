@@ -1,8 +1,15 @@
+---
+title: "Saratoga House Prices"
+author: "Shristi Singh"
+date: "March 12, 2020"
+output: pdf_document
+---
+
+```{r}
 library(tidyverse)
 library(mosaic)
 library(FNN)
 library(foreach)
-
 data(SaratogaHouses)
 
 summary(SaratogaHouses)
@@ -215,14 +222,13 @@ KNNModel = do(100)*{
   Xtilde_test = scale(Xtest, scale = scale_train) 
   
   #The for loop 
-  library(foreach)
-  k_grid = seq(2,100)
+    k_grid = seq(2,100)
   rmse_grid = foreach(K = k_grid, .combine='c') %do% {
     knn_model = knn.reg(Xtilde_train, Xtilde_test, Ytrain, k=K)
     rmse(Ytest, knn_model$pred)
   }
 }
-knn_model_mean = colMeans(KNNModel)
+knn_model_mean = colMeans(knn_model)
 
 #Plotting 
 plot(k_grid, knn_model_mean)
@@ -233,4 +239,4 @@ abline(h=rmse(Ytest, yhat_test2))
 
 save.image("/Users/shris/OneDrive/Documents/GitHub/SDS323_Spring2020/Homework 2/Question 2")
 
-
+```
