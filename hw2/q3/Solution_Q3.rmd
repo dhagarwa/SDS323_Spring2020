@@ -117,7 +117,7 @@ viral_cvl = cv.gamlr(x, viral, nfold=10, family="binomial", verb=TRUE)
 plot(viral_cvl, bty="n")
 
 ## CV minimum deviance selection
-b.min = coef(viral_cvl, select="min")
+b.min = coef(viral_cvl, select="min", type="response")
 log(viral_cvl$lambda.min)
 sum(b.min!=0) # This is random because of the CV randomness.
 
@@ -126,7 +126,7 @@ hat_viral = predict(viral_cvl, x)
 #head (hat_viral, 50)
 
 # Changing hat_viral to true/false prediction
-b_hat_viral = ifelse(hat_viral > 0, 1, 0)
+b_hat_viral = ifelse(hat_viral > 0.5, 1, 0)
 #head(b_hat_viral, 50)
 
 # Creating confusion matirx
