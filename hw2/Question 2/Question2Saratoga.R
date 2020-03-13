@@ -222,7 +222,7 @@ KNNModel = do(100)*{
     rmse(Ytest, knn_model$pred)
   }
 }
-knn_model_mean = colMeans(knn_model)
+knn_model_mean = colMeans(KNNModel)
 
 #Plotting 
 plot(k_grid, knn_model_mean)
