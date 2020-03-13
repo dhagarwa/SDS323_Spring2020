@@ -8,6 +8,8 @@ output: pdf_document
 ```{r}
 library(tidyverse)
 library(mosaic)
+library(FNN)
+library(foreach)
 data(SaratogaHouses)
 
 summary(SaratogaHouses)
@@ -220,8 +222,7 @@ KNNModel = do(100)*{
   Xtilde_test = scale(Xtest, scale = scale_train) 
   
   #The for loop 
-  library(foreach)
-  k_grid = seq(2,100)
+    k_grid = seq(2,100)
   rmse_grid = foreach(K = k_grid, .combine='c') %do% {
     knn_model = knn.reg(Xtilde_train, Xtilde_test, Ytrain, k=K)
     rmse(Ytest, knn_model$pred)

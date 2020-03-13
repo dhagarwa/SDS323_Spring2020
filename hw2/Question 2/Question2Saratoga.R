@@ -1,7 +1,7 @@
 library(tidyverse)
 library(mosaic)
 library(FNN)
-library(purrr)
+library(foreach)
 
 data(SaratogaHouses)
 
