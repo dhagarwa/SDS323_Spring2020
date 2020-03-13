@@ -4,7 +4,7 @@ library(class)
 library(mosaic)
 library(FNN)
 
-sclass = read.csv('../data/sclass')
+
 
 sclass350 = subset(sclass, trim == '350')
 sclass65AMG = subset(sclass, trim == '65 AMG')
