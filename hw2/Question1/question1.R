@@ -3,7 +3,7 @@ library(tidyverse)
 library(class)
 library(mosaic)
 library(FNN)
-sclass = read.csv('../data/sclass')
+sclass = read.csv('../Question1/sclass.csv')
 
 sclass350 = subset(sclass, trim == '350')
 sclass65AMG = subset(sclass, trim == '65 AMG')
@@ -58,9 +58,9 @@ finalknn350 = knn.reg(train = Xtrain350, test = Xtest350, y = ytrain350, k=k_gri
 ypred_finalknn350 = finalknn350$pred
 
 sclass350_test$ypred_finalknn350 = ypred_finalknn350
-p_test = ggplot(data = sclass350_test) + 
-  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey')
-p_test + geom_point(aes(x = mileage, y = ypred_finalknn350), color='red')
+p_test350 = ggplot(data = sclass350_test) + 
+  geom_point(mapping = aes(x = mileage, y = price))
+p_test350 + geom_point(aes(x = mileage, y = ypred_finalknn350), color='red')
 
 K =2
 knn_model65AMG = knn.reg(Xtrain65AMG, Xtest65AMG, ytrain65AMG, k=K)
@@ -81,6 +81,7 @@ finalknn65AMG = knn.reg(train = Xtrain65AMG, test = Xtest65AMG, y = ytrain65AMG,
 ypred_finalknn65AMG = finalknn65AMG$pred
 
 sclass65AMG_test$ypred_finalknn65AMG = ypred_finalknn65AMG
-p_test = ggplot(data = sclass65AMG_test) + 
-  geom_point(mapping = aes(x = mileage, y = price), color='lightgrey')
-p_test + geom_point(aes(x = mileage, y = ypred_finalknn65AMG), color='red')
+p_test65AMG = ggplot(data = sclass65AMG_test) + 
+  geom_point(mapping = aes(x = mileage, y = price))
+p_test65AMG + geom_point(aes(x = mileage, y = ypred_finalknn65AMG), color='red')
+
