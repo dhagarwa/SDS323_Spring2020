@@ -1,11 +1,11 @@
 ---
-  title: "Predicting When Articles Go Viral"
+title: "Predicting When Articles Go Viral"
 author: "Shristi Singh"
 date: "March 12, 2020"
 output: pdf_document
 ---
-  
 
+```{r}
 
 ##### Importiing, viewing, and analizing data
 online_news <- read.csv("~/GitHub/SDS323_Spring2020/hw2/q3/online_news.csv")
@@ -112,4 +112,6 @@ sum(diag(confusion_2))/sum(confusion_2) # The sample accuracy of model 2 is 63 p
 7811/(7811+12705) # False discovery rate is 38.07 percent which is better than model 1 because lower is better
 
 # In conclusion based on True Positive Rate, False Positve Rate, False Discovery Rate, and general acuracy Model 2 does better than Model 1.
+
+```
 

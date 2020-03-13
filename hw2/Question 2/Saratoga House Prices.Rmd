@@ -1,8 +1,13 @@
+---
+title: "Saratoga House Prices"
+author: "Shristi Singh"
+date: "March 12, 2020"
+output: pdf_document
+---
+
+```{r}
 library(tidyverse)
 library(mosaic)
-library(FNN)
-library(purrr)
-
 data(SaratogaHouses)
 
 summary(SaratogaHouses)
@@ -233,4 +238,4 @@ abline(h=rmse(Ytest, yhat_test2))
 
 save.image("/Users/shris/OneDrive/Documents/GitHub/SDS323_Spring2020/Homework 2/Question 2")
 
-
+```
