@@ -1,10 +1,8 @@
 ---
 title: "KNN Practice"
-author: "Bao Doquang"
-date: "3/11/2020"
-output:
-  html_document: default
-  pdf_document: default
+author: "Bao Doquang, Dhwanit Agarwal, Akksay Singh and Shristi Singh"
+date: "March 13, 2020"
+output: pdf_document
 ---
 
 ```{r message=FALSE}
@@ -21,7 +19,7 @@ sclass65AMG = subset(sclass, trim == '65 AMG')
 
 (1) First I created subsets of the data which only included observations with 'trim' of 350 and 65 AMD and separated them thusly.
 
-```{r message=FALSE}
+```{r}
 
 n350 = nrow(sclass350)
 n_train350 = round(0.8*n350) 
@@ -40,7 +38,7 @@ sclass65AMG_train = sclass65AMG[train_cases65AMG,]
 sclass65AMG_test = sclass65AMG[test_cases65AMG,]
 ```
 (2) Here, I created training and testing sets for each of the individual subsets.
-```{r message=FALSE}
+```{r}
 
 Xtrain350 = model.matrix(~ mileage, data=sclass350_train)
 Xtest350 = model.matrix(~ mileage, data=sclass350_test)
@@ -55,7 +53,7 @@ ytrain65AMG = sclass65AMG_train$price
 ytest65AMG = sclass65AMG_test$price
 ```
 (3) This step splits the feature of the model from the outcome; however this model only has 1 model feature, mileage.
-```{r message=FALSE}
+```{r}
 
 K = 2
 rmse = function(y, yhat) {
@@ -63,7 +61,7 @@ rmse = function(y, yhat) {
 }
 ```
 (4) Created the root mean square error helper function.
-```{r message=FALSE}
+```{r}
 
 knn_model350 = knn.reg(Xtrain350, Xtest350, ytrain350, k=K)
 
@@ -87,7 +85,7 @@ p_test350 = ggplot(data = sclass350_test) +
 p_test350 + geom_point(aes(x = mileage, y = ypred_finalknn350), color='red')
 ```
 (5) Here, we define the predictive model as a K nearest neighbors, train on our training set, then plot RMSE from our helper function against various levels of K. From this we take the level of K with the lowest available error to use in our final predictive model where we plot the predictions of our model that was developed with the training set, against the testing set.
-```{r message=FALSE}
+```{r}
 
 K =2
 knn_model65AMG = knn.reg(Xtrain65AMG, Xtest65AMG, ytrain65AMG, k=K)
