@@ -40,7 +40,7 @@ n_train = round(0.8*n)  # round to nearest integer
 n_test = n - n_train
 train_cases = sample.int(n, n_train, replace=FALSE)
 test_cases = setdiff(1:n, train_cases)
-saratoga_train = SaratogaHouses[train_cases,]
+saratoga_train = SaratogaHouses[train_cases,] #Rows first then columns 
 saratoga_test = SaratogaHouses[test_cases,]
 
 # Fit to the training data
@@ -64,7 +64,6 @@ rmse(saratoga_test$price, yhat_test3)
 
 
 # easy averaging over train/test splits
-library(mosaic)
 
 n_train = round(0.8*n)  # round to nearest integer
 n_test = n - n_train
