@@ -1,6 +1,6 @@
 ---
   title: "Predicting When Articles Go Viral"
-author: "Shristi Singh"
+author: "Dhwanit, Shristi"
 date: "March 12, 2020"
 output: pdf_document
 ---
