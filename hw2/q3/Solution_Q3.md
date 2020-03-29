@@ -131,7 +131,7 @@ Summary of the results
 
 ***Conclusion:*** From the table, the overall accuracy rates indicate
 that **model 2 (direct logistic regression with lasso)** performs better
-than **model 1 (regress than threshold)** while both perform better than
+than **model 1 (regress then threshold)** while both perform better than
 the null model. Model 2 is 6% better than model 1 and 13% better than
 null model. Althought the TPR for the model 1 is much higher than the
 model 2, FPR and FDR are much lower for model 2. Thus, overall model 2
@@ -171,10 +171,10 @@ thresholding.
 
     ##    yhat
     ## y       0     1
-    ##   0 18437  1645
-    ##   1 14999  4563
+    ##   0 18390  1692
+    ##   1 14894  4668
 
-    ## [1] 0.5801635
+    ## [1] 0.5816265
 
     ## viral
     ##     0     1 
@@ -191,7 +191,7 @@ thresholding.
 
     ##    yhat
     ## y       0     1
-    ##   0 18437  1645
-    ##   1 14999  4563
+    ##   0 18390  1692
+    ##   1 14894  4668
 
-    ## [1] 0.5801635
+    ## [1] 0.5816265
