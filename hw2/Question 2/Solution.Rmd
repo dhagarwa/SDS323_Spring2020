@@ -7,11 +7,11 @@ output: pdf_document
 
 Classwork: 
 ```{r}
-library(tidyverse)
-library(dplyr)
-library(mosaic)
-library(FNN)
-library(foreach)
+library(tidyverse, quietly = TRUE)
+library(dplyr, quietly = TRUE)
+library(mosaic, quietly = TRUE)
+library(FNN, quietly = TRUE)
+library(foreach, quietly = TRUE)
 data(SaratogaHouses)
 
 summary(SaratogaHouses)
@@ -71,9 +71,7 @@ rmse(saratoga_test$price, yhat_test1)
 rmse(saratoga_test$price, yhat_test2)
 rmse(saratoga_test$price, yhat_test3)
 
-
 # easy averaging over train/test splits
-library(mosaic)
 
 n_train = round(0.8*n)  # round to nearest integer
 n_test = n - n_train
@@ -111,57 +109,80 @@ rmse_vals
 colMeans(rmse_vals)
 boxplot(rmse_vals)
 
-
 ```
 
-Attempt at "hand-building" a model for price that outperforms the "medium" model that we considered in class: 
+Attempt at "hand-building" a model for price that outperforms the "medium" model that we considered in class by using combinations of transformations, polynomial terms, and interactions: 
+
 ```{r}
 
 str(SaratogaHouses)
 
-# New bariables for "hand-built" model 
+# New variables for "hand-built" model 
 
-SaratogaHouses$NewBuilt <- ifelse(SaratogaHouses$age == 0, 1,0)
-tail(SaratogaHouses$NewBuilt)
+SaratogaHouses$ConstructionCost <- SaratogaHouses$price - SaratogaHouses$landValue
+SaratogaHouses$waterfrontDummy <- ifelse(SaratogaHouses$waterfront == "yes", 1,0)
+SaratogaHouses$newConstructionDummy <- ifelse(SaratogaHouses$age == "yes", 1,0)
+SaratogaHouses$centralAirDummy <- ifelse(SaratogaHouses$age == "yes", 1,0)
 
-ConstructionCost <- SaratogaHouses$price - SaratogaHouses$landValue
-tail(ConstructionCost)
+str(SaratogaHouses)
 
 HeatingElectric <- SaratogaHouses[grep("electric", SaratogaHouses$heating), ]
-head(HeatingElectric)
+#View(HeatingElectric)
+#str(HeatingElectric)
 
 HeatingSteam <- SaratogaHouses[grep("hot water/steam", SaratogaHouses$heating), ]
-head(HeatingSteam)
+#View(HeatingSteam)
+#str(HeatingSteam)
 
 HeatingHotAir <- SaratogaHouses[grep("hot air", SaratogaHouses$heating), ]
-head(HeatingHotAir)
+#View(HeatingHotAir)
+#str(HeatingHotAir)
 
 FuelOil <- SaratogaHouses[grep("oil", SaratogaHouses$fuel), ]
-head(FuelOil)
+#View(FuelOil)
+#str(FuelOil)
 
 FuelGas <- SaratogaHouses[grep("gas", SaratogaHouses$fuel), ]
-head(FuelGas)
+#View(FuelGas)
+#str(FuelGas)
 
 FuelElectric <- SaratogaHouses[grep("electric", SaratogaHouses$fuel), ]
-head(FuelElectric)
+#View(FuelElectric)
+#str(FuelElectric)
+
+SewerSeptic <- SaratogaHouses[grep("septic", SaratogaHouses$sewer), ]
+#View(SewerSeptic)
+#str(SewerSeptic)
+
+SewerPublicCommercial <- SaratogaHouses[grep("public/commercial", SaratogaHouses$sewer), ]
+#View(SewerPublicCommercial)
+#str(SewerPublicCommercial)
+
+SewerNone <- SaratogaHouses[grep("none", SaratogaHouses$sewer), ]
+#View(SewerNone)
+#str(SewerNone)
 
 #Defining the models 
-#Base model
 
-BaseModel = lm(price ~ lotSize + age + livingArea + pctCollege + bedrooms + fireplaces +
-               heating + bathrooms + rooms + fuel + centralAir + NewBuilt, data = SaratogaHouses)
+#Baseline model
 
-#Hand Built Model
-HandBuiltModel = lm(price ~ lotSize + pctCollege  + heating + bathrooms + bedrooms 
-            + rooms + fuel + centralAir + NewBuilt + landValue + NewBuilt*lotSize
-            + centralAir*heating + pctCollege*age + landValue*fuel + heating*bedrooms
-            , data = SaratogaHouses)
+lm_medium = lm(price ~ lotSize + age + livingArea + pctCollege + bedrooms + 
+              fireplaces + bathrooms + rooms + heating + fuel + centralAir, data=SaratogaHouses)
 
-#Define only the numerics of the train-test data sets 
+#Hand-built Model
+
+lm_handbuilt = lm(price ~ lotSize + age + livingArea + pctCollege + bedrooms + 
+                 fireplaces + bathrooms + rooms + heating + fuel + centralAir + ConstructionCost +
+                 ConstructionCost*landValue + newConstructionDummy*landValue + newConstructionDummy*lotSize +
+                 pctCollege*age + bathrooms*bedrooms, data = SaratogaHouses)
+
+
+#Defining only the numerics of the train-test data sets 
 N = nrow(SaratogaHouses)
 train = round(0.8*N)
 test = (N-train)
-#Define the fution
+
+#Defining the function
 rmse = function(y, yhat) {
   sqrt( mean( (y - yhat)^2 ) )
 }
@@ -170,8 +191,9 @@ rmse = function(y, yhat) {
 rmse1 <- NULL
 rmse2 <- NULL
 
-for (i in seq(1:200)){
-  #Picking data up for training and testing
+
+for (i in seq(1:00)){
+  #Choosing data for training and testing
   train_cases = sample.int(N, train, replace=FALSE)
   test_cases = setdiff(1:N, train_cases)
   
@@ -180,31 +202,41 @@ for (i in seq(1:200)){
   saratoga_test = SaratogaHouses[test_cases,]
   
   #Training
-  #Base Model
-  lm1 = lm(price ~ lotSize + age + livingArea + pctCollege + bedrooms + fireplaces +
-             heating + bathrooms + rooms + fuel + centralAir + NewBuilt , data=saratoga_train)
+  #Baseline model
+
+  lm_medium = lm(price ~ lotSize + age + livingArea + pctCollege + bedrooms + 
+              fireplaces + bathrooms + rooms + heating + fuel + centralAir, data=saratoga_train)
+
   #Hand-built Model
-  lm2 = lm(price ~ lotSize + pctCollege  + heating  + bathrooms + bedrooms 
-           + rooms + fuel + centralAir + NewBuilt + landValue + NewBuilt*lotSize
-           + centralAir*heating + pctCollege*age + landValue*fuel + heating*bedrooms
-           , data=saratoga_train)
+  lm_handbuilt = lm(price ~ lotSize + age + livingArea + pctCollege + bedrooms + 
+                 fireplaces + bathrooms + rooms + heating + fuel + centralAir + ConstructionCost +
+                 ConstructionCost*landValue + newConstructionDummy*landValue + newConstructionDummy*lotSize +
+                 pctCollege*age + bathrooms*bedrooms, data = saratoga_train)
   
   #Testing 
-  yhat_test1 = predict(lm1, saratoga_test)
-  yhat_test2 = predict(lm2, saratoga_test)
-  
+  yhat_test1 = predict(lm_medium, saratoga_test)
+  yhat_test2 = predict(lm_handbuilt, saratoga_test)
+
   #Run it on the actual and the predicted values
   rmse1[i]= rmse(saratoga_test$price, yhat_test1)
   rmse2[i]= rmse(saratoga_test$price, yhat_test2)
+  
 }
+
 
 mean(rmse1)
 mean(rmse2)
 
+```
+The variable ConstructionCost and the interations of ConstructionCost and landValue, newConstructionDummy and landValue,  newConstructionDummy and lotSize, pctCollege and age, and bathrooms and bedrooms,\ all seem to be especially strong drivers of house prices. 
+
+Attempt at turning my hand-built linear model into a better-performing KNN model:
+```{r}
 
 # K-Nearest Neighbors Model
 
 #Defining train-test sets for the hand-built regression model
+
 KNNModel = do(100)*{
   N = nrow(SaratogaHouses)
   train = round(0.8*N)
@@ -216,10 +248,13 @@ KNNModel = do(100)*{
   saratoga_train = SaratogaHouses[train_cases,]
   saratoga_test = SaratogaHouses[test_cases,]
   
-  Xtrain = model.matrix(~ lotSize + pctCollege  + heating  + bathrooms + bedrooms 
-                        + rooms + fuel + centralAir + NewBuilt + landValue - 1, data=saratoga_train)
-  Xtest = model.matrix(~ lotSize + pctCollege  + heating  + bathrooms + bedrooms 
-                       + rooms + fuel + centralAir + NewBuilt + landValue - 1, data=saratoga_test)
+  Xtrain = model.matrix(~ lotSize + age + livingArea + pctCollege + bedrooms + 
+                 fireplaces + bathrooms + rooms + heating + fuel + centralAir + ConstructionCost
+                 - 1, data=saratoga_train)
+  Xtest = model.matrix(~ lotSize + age + livingArea + pctCollege + bedrooms + 
+                 fireplaces + bathrooms + rooms + heating + fuel + centralAir + ConstructionCost
+                 - 1, data=saratoga_test)
+  
   Ytrain = saratoga_train$price
   Ytest = saratoga_test$price
   
@@ -230,8 +265,8 @@ KNNModel = do(100)*{
   
   #The for loop 
     k_grid = seq(2,100)
-  rmse_grid = foreach(K = k_grid, .combine='c') %do% {
-    KNNModel = knn.reg(Xtilde_train, Xtilde_test, Ytrain, k=K)
+    rmse_grid = foreach(K = k_grid, .combine='c') %do% {
+      KNNModel = knn.reg(Xtilde_train, Xtilde_test, Ytrain, k=K)
     rmse(Ytest, KNNModel$pred)
   }
 }
@@ -243,5 +278,6 @@ abline(h=rmse(Ytest, yhat_test2))
 
 ```
 
-We conclude that variables giving the same data that is completely captured by another variable can be eliminated from the model. For example, the binary variable 'NewBuilt' is not essential because we can just look at the value of the age variable of the house and if its value is 0 then the house is newly built. When a variable does not completely capture all the information about the house then we should not eliminate it because then we will lose some important information.  For example, we should not eliminate bathrooms and bedrooms variables because knowing how many of bathrooms and bedrooms specifically is important for buyers which is not fully captured by the rooms variable. On the other hand, we cannot eliminate rooms and only have bedrooms and bathrooms because bedrooms and bathrooms are not the only type of rooms that effects house prices. Other types of rooms such as laundry room, storeroom, sunroom etc. are also included in rooms and how many rooms besides bathrooms and bedrooms are important in determining house prices.  
-#Additionally, we have found that newer houses are bigger and are correlated with an increase in pricing. Also, it appears as if the age of the house is correlated with the percentage of college graduates living in the neighborhood and the higher the age and/or percent of college graduates, the higher is the predicted price. Furthermore, heating in terms of hot air affects the central air. Lastly, the fuel availability is correlated with the land value and which also affects the price.
+We conclude that variables giving the same information that is completely captured by another variable do not need to be included in the model. For example, the variable 'newConstruction' is not essential because we can just look at the value of the age variable of the house and if its' value is 0 then the house is newly built. When a variable does not completely capture all the information about the house then we should not eliminate it withoug giving it any thought because then we may lose some important information.  For example, we should not eliminate bathrooms and bedrooms variables because knowing how many of bathrooms and bedrooms specifically is important for buyers which is not fully captured by the rooms variable. On the other hand, we cannot eliminate rooms and only have bedrooms and bathrooms because bedrooms and bathrooms are not the only type of rooms that effects house prices. Other types of rooms such as laundry room, storeroom, sunroom etc. are also included in rooms and how many rooms besides bathrooms and bedrooms are important in determining house prices.  
+
+Additionally, we have found that newer houses are bigger and are correlated with an increase in pricing. Also, it appears as if the age of the house is correlated with the percentage of college graduates living in the neighborhood and the higher the age and/or percent of college graduates, the higher is the predicted price. 
