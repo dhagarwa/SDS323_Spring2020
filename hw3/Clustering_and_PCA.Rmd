@@ -1,0 +1,288 @@
+---
+title: "Saratoga Houses Price Modeling Strategies for the Local Taxing Authority"
+author: "Bao Doquang, Dhwanit Agarwal, Akksay Singh and Shristi Singh"
+date: "March 13, 2020"
+output: pdf_document
+---
+
+Classwork: 
+```{r}
+library(tidyverse, quietly = TRUE)
+library(dplyr, quietly = TRUE)
+library(mosaic, quietly = TRUE)
+library(FNN, quietly = TRUE)
+library(foreach, quietly = TRUE)
+data(SaratogaHouses)
+
+summary(SaratogaHouses)
+
+#Defining models
+
+# Baseline model
+lm_small = lm(price ~ bedrooms + bathrooms + lotSize, data=SaratogaHouses)
+
+# 11 main effects
+lm_medium = lm(price ~ lotSize + age + livingArea + pctCollege + bedrooms + 
+                 fireplaces + bathrooms + rooms + heating + fuel + centralAir, data=SaratogaHouses)
+
+# Sometimes it's easier to name the variables we want to leave out
+# The command below yields exactly the same model.
+# the dot (.) means "all variables not named"
+# the minus (-) means "exclude this variable"
+lm_medium2 = lm(price ~ . - sewer - waterfront - landValue - newConstruction, data=SaratogaHouses)
+
+coef(lm_medium)
+coef(lm_medium2)
+
+# All interactions
+# the ()^2 says "include all pairwise interactions"
+lm_big = lm(price ~ (. - sewer - waterfront - landValue - newConstruction)^2, data=SaratogaHouses)
+
+
+####
+# Compare out-of-sample predictive performance
+####
+
+# Split into training and testing sets
+n = nrow(SaratogaHouses) # number of rows
+n_train = round(0.8*n)  # round to nearest integer
+n_test = n - n_train
+train_cases = sample.int(n, n_train, replace=FALSE)
+test_cases = setdiff(1:n, train_cases)
+saratoga_train = SaratogaHouses[train_cases,]
+saratoga_test = SaratogaHouses[test_cases,]
+
+# Fit to the training data
+lm1 = lm(price ~ lotSize + bedrooms + bathrooms, data=saratoga_train)
+lm2 = lm(price ~ . - sewer - waterfront - landValue - newConstruction, data=saratoga_train)
+lm3 = lm(price ~ (. - sewer - waterfront - landValue - newConstruction)^2, data=saratoga_train)
+
+# Predictions out of sample
+yhat_test1 = predict(lm1, saratoga_test)
+yhat_test2 = predict(lm2, saratoga_test)
+yhat_test3 = predict(lm3, saratoga_test)
+
+rmse = function(y, yhat) {
+  sqrt( mean( (y - yhat)^2 ) )
+}
+
+# Root mean-squared prediction error
+rmse(saratoga_test$price, yhat_test1)
+rmse(saratoga_test$price, yhat_test2)
+rmse(saratoga_test$price, yhat_test3)
+
+# easy averaging over train/test splits
+
+n_train = round(0.8*n)  # round to nearest integer
+n_test = n - n_train
+
+rmse_vals = do(100)*{
+  
+  # re-split into train and test cases with the same sample sizes
+  train_cases = sample.int(n, n_train, replace=FALSE)
+  test_cases = setdiff(1:n, train_cases)
+  saratoga_train = SaratogaHouses[train_cases,]
+  saratoga_test = SaratogaHouses[test_cases,]
+  
+  # Fit to the training data
+  lm1 = lm(price ~ lotSize + bedrooms + bathrooms, data=saratoga_train)
+  lm2 = lm(price ~ . - sewer - waterfront - landValue - newConstruction, data=saratoga_train)
+  lm3 = lm(price ~ (. - sewer - waterfront - landValue - newConstruction)^2, data=saratoga_train)
+  
+  lm_dominate = lm(price ~ lotSize + age + livingArea + pctCollege + 
+                     bedrooms + fireplaces + bathrooms + rooms + heating + fuel +
+                     centralAir + lotSize:heating + livingArea:rooms + newConstruction + livingArea:newConstruction, data=saratoga_train)
+  
+  # Predictions out of sample
+  yhat_test1 = predict(lm1, saratoga_test)
+  yhat_test2 = predict(lm2, saratoga_test)
+  yhat_test3 = predict(lm3, saratoga_test)
+  yhat_test4 = predict(lm_dominate, saratoga_test)
+  
+  c(rmse(saratoga_test$price, yhat_test1),
+    rmse(saratoga_test$price, yhat_test2),
+    rmse(saratoga_test$price, yhat_test3),
+    rmse(saratoga_test$price, yhat_test4))
+}
+
+rmse_vals
+colMeans(rmse_vals)
+boxplot(rmse_vals)
+
+```
+
+Attempt at "hand-building" a model for price that outperforms the "medium" model that we considered in class by using combinations of transformations, polynomial terms, and interactions: 
+```{r}
+
+str(SaratogaHouses)
+
+# New variables for "hand-built" model 
+
+SaratogaHouses$ConstructionCost <- SaratogaHouses$price - SaratogaHouses$landValue
+SaratogaHouses$waterfrontDummy <- ifelse(SaratogaHouses$waterfront == "yes", 1,0)
+SaratogaHouses$newConstructionDummy <- ifelse(SaratogaHouses$age == "yes", 1,0)
+SaratogaHouses$centralAirDummy <- ifelse(SaratogaHouses$age == "yes", 1,0)
+
+str(SaratogaHouses)
+
+HeatingElectric <- SaratogaHouses[grep("electric", SaratogaHouses$heating), ]
+#View(HeatingElectric)
+#str(HeatingElectric)
+
+HeatingSteam <- SaratogaHouses[grep("hot water/steam", SaratogaHouses$heating), ]
+#View(HeatingSteam)
+#str(HeatingSteam)
+
+HeatingHotAir <- SaratogaHouses[grep("hot air", SaratogaHouses$heating), ]
+#View(HeatingHotAir)
+#str(HeatingHotAir)
+
+FuelOil <- SaratogaHouses[grep("oil", SaratogaHouses$fuel), ]
+#View(FuelOil)
+#str(FuelOil)
+
+FuelGas <- SaratogaHouses[grep("gas", SaratogaHouses$fuel), ]
+#View(FuelGas)
+#str(FuelGas)
+
+FuelElectric <- SaratogaHouses[grep("electric", SaratogaHouses$fuel), ]
+#View(FuelElectric)
+#str(FuelElectric)
+
+SewerSeptic <- SaratogaHouses[grep("septic", SaratogaHouses$sewer), ]
+#View(SewerSeptic)
+#str(SewerSeptic)
+
+SewerPublicCommercial <- SaratogaHouses[grep("public/commercial", SaratogaHouses$sewer), ]
+#View(SewerPublicCommercial)
+#str(SewerPublicCommercial)
+
+SewerNone <- SaratogaHouses[grep("none", SaratogaHouses$sewer), ]
+#View(SewerNone)
+#str(SewerNone)
+
+#Defining the models 
+
+#Baseline model
+
+lm_medium = lm(price ~ lotSize + age + livingArea + pctCollege + bedrooms + 
+              fireplaces + bathrooms + rooms + heating + fuel + centralAir, data=SaratogaHouses)
+
+#Hand-built Model
+
+lm_handbuilt = lm(price ~ lotSize + age + livingArea + pctCollege + bedrooms + 
+                 fireplaces + bathrooms + rooms + heating + fuel + centralAir + ConstructionCost +
+                 ConstructionCost*landValue + newConstructionDummy*landValue + newConstructionDummy*lotSize +
+                 pctCollege*age + bathrooms*bedrooms, data = SaratogaHouses)
+
+
+#Defining only the numerics of the train-test data sets 
+N = nrow(SaratogaHouses)
+train = round(0.8*N)
+test = (N-train)
+
+#Defining the function
+rmse = function(y, yhat) {
+  sqrt( mean( (y - yhat)^2 ) )
+}
+
+#Rmse iterations
+rmse1 <- NULL
+rmse2 <- NULL
+
+
+for (i in seq(1:00)){
+  #Choosing data for training and testing
+  train_cases = sample.int(N, train, replace=FALSE)
+  test_cases = setdiff(1:N, train_cases)
+  
+  #Define the train-test data sets (for all X's and Y)
+  saratoga_train = SaratogaHouses[train_cases,]
+  saratoga_test = SaratogaHouses[test_cases,]
+  
+  #Training
+  #Baseline model
+
+  lm_medium = lm(price ~ lotSize + age + livingArea + pctCollege + bedrooms + 
+              fireplaces + bathrooms + rooms + heating + fuel + centralAir, data=saratoga_train)
+
+  #Hand-built Model
+  lm_handbuilt = lm(price ~ lotSize + age + livingArea + pctCollege + bedrooms + 
+                 fireplaces + bathrooms + rooms + heating + fuel + centralAir + ConstructionCost +
+                 ConstructionCost*landValue + newConstructionDummy*landValue + newConstructionDummy*lotSize +
+                 pctCollege*age + bathrooms*bedrooms, data = saratoga_train)
+  
+  #Testing 
+  yhat_test1 = predict(lm_medium, saratoga_test)
+  yhat_test2 = predict(lm_handbuilt, saratoga_test)
+
+  #Run it on the actual and the predicted values
+  rmse1[i]= rmse(saratoga_test$price, yhat_test1)
+  rmse2[i]= rmse(saratoga_test$price, yhat_test2)
+  
+}
+
+
+mean(rmse1)
+mean(rmse2)
+
+```
+
+Attempt at turning my hand-built linear model into a better-performing KNN model:
+```{r}
+
+# K-Nearest Neighbors Model
+
+#Defining train-test sets for the hand-built regression model
+
+KNNModel = do(100)*{
+  N = nrow(SaratogaHouses)
+  train = round(0.8*N)
+  test = (N-train)
+  
+  train_cases = sample.int(N, train, replace=FALSE)
+  test_cases = setdiff(1:N, train_cases)
+  
+  saratoga_train = SaratogaHouses[train_cases,]
+  saratoga_test = SaratogaHouses[test_cases,]
+  
+  Xtrain = model.matrix(~ lotSize + age + livingArea + pctCollege + bedrooms + 
+                 fireplaces + bathrooms + rooms + heating + fuel + centralAir + ConstructionCost
+                 - 1, data=saratoga_train)
+  Xtest = model.matrix(~ lotSize + age + livingArea + pctCollege + bedrooms + 
+                 fireplaces + bathrooms + rooms + heating + fuel + centralAir + ConstructionCost
+                 - 1, data=saratoga_test)
+  
+  Ytrain = saratoga_train$price
+  Ytest = saratoga_test$price
+  
+  #Scaling the features (Standardization)
+  scale_train = apply(Xtrain, 2, sd) 
+  Xtilde_train = scale(Xtrain, scale = scale_train)
+  Xtilde_test = scale(Xtest, scale = scale_train) 
+  
+  #The for loop 
+    k_grid = seq(2,100)
+    rmse_grid = foreach(K = k_grid, .combine='c') %do% {
+      KNNModel = knn.reg(Xtilde_train, Xtilde_test, Ytrain, k=K)
+    rmse(Ytest, KNNModel$pred)
+  }
+}
+KNNModelMean = colMeans(KNNModel)
+
+#Plotting 
+plot(k_grid, KNNModelMean)
+abline(h=rmse(Ytest, yhat_test2)) 
+
+```
+
+Conclusion: 
+
+While building our model we realized that when a variable does not completely capture all the information about the house then we should not eliminate it without giving it any thought because then we may lose some important information. For example, we should not eliminate bathrooms and bedrooms variables because knowing how many bathrooms and bedrooms specifically is important for buyers which is not fully captured by the rooms variable. On the other hand, we cannot eliminate rooms and only have bedrooms and bathrooms because bedrooms and bathrooms are not the only type of rooms that affects house prices. Other types of rooms such as laundry room, storeroom, sunroom, etc. are also included in rooms and how many rooms besides bathrooms and bedrooms are important in determining house prices. We have added one composite variable ConstructionCost and five interaction terms to the medium model to improve the model's predictive performance.The variable ConstructionCost and the interactions of ConstructionCost and landValue, newConstructionDummy and landValue, newConstructionDummy and lotSize, pctCollege and age, and bathrooms and bedrooms, all seem to be especially strong drivers of house prices because addicting these has decreased the rmse from something in the 60,000 to almost 0 depending on random variation.
+
+ConstructionCost is calculated by subtracting landvaule from price and used to represent the cost of building the house on any piece of land. The interaction of ConstructionCost and landvalue is capturing how luxurious houses using high-quality raw materials are built in neighborhoods where land value is high or appreciating. Similarly cheaper houses are built in neighborhoods where land value is low because poorer people live there. The interaction term newConstructionDummy and landvlue is capturing that new constructions happened in neighborhoods where land value is higher or appreciating and the interaction of newConstructionDummy and lotSize is capturing the fact that more new construction happens as lot size increases. The interaction of pctCollege and age captures the fact that the older the houses are, the higher is the percent of the neighborhood that graduated from college.The interaction of bedroom and bathroom captures that the more bedrooms a house the more bathrooms it will have and so the higher will be the price of the house. 
+
+From our analysis, it appears that your organization can tax newly built houses slightly more because after analyzing the data we have found that newer houses are bigger and are correlated with an increase in pricing. Normally these houses most probably belong to the rich class of society. We will not recommend you to charge newer built houses a really high rate though because it also appears that age of the house is correlated with the percentage of college graduates living in the neighborhood and the higher the age and/or percent of college graduates, the higher is the price of the house. In most cases, the former effect of newly built houses dominates the latter effect of age and percent of college graduates in the neighborhood.
+
+
+
