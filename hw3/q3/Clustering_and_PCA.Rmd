@@ -59,12 +59,14 @@ We do this by analyzing the correlation between each chemical property and a giv
 cor(wine_chem_prop, as.numeric(wine$color))
 ```
 
-#Note that here higher positive correlation means that the property is more closely
-#associated with white wine. We will choose the covariates with the greatest
-#correlation (positive or negative) with wine color. In this case, it would be
-#volatile acidity, chlorides, total sulfur dioxide, and sulphates.
+In the results above higher positive correlation means that that specific chemical property is more closely
+associated with white wine.
 
-#Comparing select variables by wine color.
+We will choose the covariates with the greatest positive or negative correlation with wine color. 
+In the results above these are volatile.acidity, chlorides, total.sulfur.dioxide, and sulphates.
+
+
+We can now start to Comparing select variables by wine color.
 
 ```{r}
 pairs(wine_df[, c(2,5,7,10)], col = c("red", "grey")[wine_df$color],
