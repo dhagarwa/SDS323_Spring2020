@@ -1,6 +1,6 @@
 # import data and examine it
 
-greenbuildings <- read.csv("~/Google Drive/UT Austin courses/SDS323_Spring2020/hw3/q1/greenbuildings.csv")
+greenbuildings <- read.csv("~/GitHub/SDS323_Spring2020/hw3/q1/greenbuildings.csv")
 View(greenbuildings)
 ok <- complete.cases(greenbuildings)
 greenbuildings <- greenbuildings[ok,]
@@ -31,6 +31,8 @@ y = log(greenbuildings$Rent) # pull out `y' too just for convenience and do log(
 # the cv.gamlr command does both things at once.
 #(verb just prints progress)
 cvl = cv.gamlr(x, y, nfold=5, verb=TRUE)
+
+coef(cvl)
 
 # plot the out-of-sample deviance as a function of log lambda
 plot(cvl, bty="n")
