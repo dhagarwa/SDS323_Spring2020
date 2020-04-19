@@ -1,8 +1,9 @@
 # import data and examine it
 
-greenbuildings <- read.csv("~/GitHub/SDS323_Spring2020/hw3/q1/greenbuildings.csv")
+greenbuildings <- read.csv("~/Google Drive/UT Austin courses/SDS323_Spring2020/hw3/q1/greenbuildings.csv")
 View(greenbuildings)
-complete.cases(greenbuildings)
+ok <- complete.cases(greenbuildings)
+greenbuildings <- greenbuildings[ok,]
 
 # note that shares is hugely skewed
 # probably want a log transformation here
@@ -21,9 +22,10 @@ library(gamlr)
 
 # i create a matrix of all my independent varaibles except for url from online_news data to make it easily readable for gamlr commands.
 # the sparse.model.matrix function.
-x = sparse.model.matrix(log(Rent) ~ . - CS_PropertyID - LEED -Energystar, data=greenbuildings)[,-1] # do -1 to drop intercep
+x = model.matrix( ~  . CS_PropertyID - LEED -Energystar  , data=greenbuildings)[,-1] # do -1 to drop intercep
 
 y = log(greenbuildings$Rent) # pull out `y' too just for convenience and do log(shares)- dependent variable
+
 
 # Here I fit my lasso regression to the data and do my cross validation of k=10 n folds
 # the cv.gamlr command does both things at once.
