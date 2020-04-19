@@ -1,6 +1,6 @@
 # import data and examine it
 
-greenbuildings <- read.csv("~/Google Drive/UT Austin courses/SDS323_Spring2020/hw3/q1/greenbuildings.csv")
+greenbuildings <- read.csv("~/GitHub/SDS323_Spring2020/hw3/q1/greenbuildings.csv")
 View(greenbuildings)
 ok <- complete.cases(greenbuildings)
 greenbuildings <- greenbuildings[ok,]
@@ -22,7 +22,7 @@ library(gamlr)
 
 # i create a matrix of all my independent varaibles except for url from online_news data to make it easily readable for gamlr commands.
 # the sparse.model.matrix function.
-x = model.matrix( ~  . CS_PropertyID - LEED -Energystar  , data=greenbuildings)[,-1] # do -1 to drop intercep
+x = model.matrix(log(Rent) ~  . -CS_PropertyID - LEED -Energystar  , data=greenbuildings)[,-1] # do -1 to drop intercep
 
 y = log(greenbuildings$Rent) # pull out `y' too just for convenience and do log(shares)- dependent variable
 
