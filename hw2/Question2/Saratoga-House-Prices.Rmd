@@ -1,7 +1,7 @@
 ---
 title: "Saratoga House Prices"
-author: "Shristi Singh"
-date: "March 12, 2020"
+author: "Bao Doquang, Dhwanit Agarwal, Akksay Singh and Shristi Singh"
+date: "March 13, 2020"
 output: pdf_document
 ---
 
@@ -224,19 +224,17 @@ KNNModel = do(100)*{
   #The for loop 
     k_grid = seq(2,100)
   rmse_grid = foreach(K = k_grid, .combine='c') %do% {
-    knn_model = knn.reg(Xtilde_train, Xtilde_test, Ytrain, k=K)
-    rmse(Ytest, knn_model$pred)
+    KNNModel = knn.reg(Xtilde_train, Xtilde_test, Ytrain, k=K)
+    rmse(Ytest, KNNModel$pred)
   }
 }
-knn_model_mean = colMeans(knn_model)
+KNNModelMean = colMeans(KNNModel)
 
 #Plotting 
-plot(k_grid, knn_model_mean)
+plot(k_grid, KNNModelMean)
 abline(h=rmse(Ytest, yhat_test2)) 
 
 #We conclude that variables giving the same data that is completely captured by another variable can be eliminated from the model. For example, the binary variable 'NewBuilt' is not essential because we can just look at the value of the age variable of the house and if its value is 0 then the house is newly built. When a variable does not completely capture all the information about the house then we should not eliminate it because then we will lose some important information.  For example, we should not eliminate bathrooms and bedrooms variables because knowing how many of bathrooms and bedrooms specifically is important for buyers which is not fully captured by the rooms variable. On the other hand, we cannot eliminate rooms and only have bedrooms and bathrooms because bedrooms and bathrooms are not the only type of rooms that effects house prices. Other types of rooms such as laundry room, storeroom, sunroom etc. are also included in rooms and how many rooms besides bathrooms and bedrooms are important in determining house prices.  
 #Additionally, we have found that newer houses are bigger and are correlated with an increase in pricing. Also, it appears as if the age of the house is correlated with the percentage of college graduates living in the neighborhood and the higher the age and/or percent of college graduates, the higher is the predicted price. Furthermore, heating in terms of hot air affects the central air. Lastly, the fuel availability is correlated with the land value and which also affects the price.
-
-save.image("/Users/shris/OneDrive/Documents/GitHub/SDS323_Spring2020/Homework 2/Question 2")
 
 ```

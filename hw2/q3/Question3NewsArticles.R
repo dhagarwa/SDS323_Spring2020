@@ -1,6 +1,6 @@
 ---
   title: "Predicting When Articles Go Viral"
-author: "Shristi Singh"
+author: "Dhwanit, Shristi"
 date: "March 12, 2020"
 output: pdf_document
 ---
@@ -9,7 +9,7 @@ output: pdf_document
 
 ##### Importiing, viewing, and analizing data
 online_news <- read.csv("~/GitHub/SDS323_Spring2020/hw2/q3/online_news.csv")
-View(online_news)
+#View(online_news)
 str(online_news)
 
 ##### Model 1 Regress first and threshold second
@@ -75,15 +75,17 @@ plot(viral_cvl, bty="n")
 
 ## CV minimum deviance selection
 b.min = coef(viral_cvl, select="min")
+print(b.min)
 log(viral_cvl$lambda.min)
 sum(b.min!=0) # This is random because of the CV randomness.
 
 # Predicting number of viral
-hat_viral = predict(viral_cvl, x)
+hat_viral = predict(viral_cvl, x, select = "min", type="response")
+plot(hat_viral)
 head (hat_viral, 50)
 
 # Changing hat_viral to true/false prediction
-b_hat_viral = ifelse(hat_viral > 0, 1, 0)
+b_hat_viral = ifelse(hat_viral > 0.5, 1, 0)
 head(b_hat_viral, 50)
 
 # Creating confusion matirx
@@ -92,7 +94,7 @@ print(confusion_2)
 sum(diag(confusion_2))/sum(confusion_2) # This is the sample accuracy of model 2
 
 
-##### Comaprison of models
+##### Comparison of models
 
 table(viral) # The actual number of viral or not viral articles
 20082/39644  # 50.66 percent of articles were not viral which is the null hypothesis
@@ -100,16 +102,12 @@ table(viral) # The actual number of viral or not viral articles
 print(confusion_1)
 sum(diag(confusion_1))/sum(confusion_1) # The sample accuracy for model 1 is 56.8 percent
 # Hence model 1 is (56.8-50.66) about a 6 percent improvement to the null model
-17458/(17458+5058) # True positive rate of model 1 is 77.54 percent
-15024/(5058+15024) # Fasle positive rate of model 1 is 74.81 percent
-15024/(15024+17458)# False dicovery rate of model 1 is 46.25 percent
+
 
 print(confusion_2)
 sum(diag(confusion_2))/sum(confusion_2) # The sample accuracy of model 2 is 63 percent
 # Hence model 2 is 12.5 percent improvement to null model and about 6.2 percent improvement to model 1
-12704/(12705+6857) # True positive rate is 64.95 percent which is worst than model 1
-7811/(7811+12271) # False positive rate is 38.9 percent which is better than model 1 because lower is better 
-7811/(7811+12705) # False discovery rate is 38.07 percent which is better than model 1 because lower is better
+
 
 # In conclusion based on True Positive Rate, False Positve Rate, False Discovery Rate, and general acuracy Model 2 does better than Model 1.
 

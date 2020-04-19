@@ -1,0 +1,164 @@
+---
+title: "Solution_Q3"
+author: "Shristi, Dhwanit, Bao, Akssay"
+date: "3/12/2020"
+output: pdf_document
+---
+
+# Classifying mashable articles as viral and not viral based on given features. 
+Apart from the trivial null model of predicting every article as non viral, two models are built:  
+
+1. Model 1: regress to fit log(shares) and then threshold it to classify as viral or not viral  and,   
+2. Model 2: directly do a logistic regression to predict whether it is viral or not.  
+
+For both models, lasso regression with cross validation is used to minimize deviance with penalty term while avoiding overfitting and enabling automatic variable selection. 
+
+
+#  Summary of the results 
+### Confusion matrix of NULL model 
+ |     |  Actual viral | Actual non-viral |
+  |-------|---------| --------|
+  | Predicted viral|  0    |   0   |
+  | Predicted non-viral |    19563    |  20082      |
+  
+
+### Confusion matrix of  model 1 
+ |     |  Actual viral | Actual non viral |
+  |-------|---------| --------|
+  | Preicted Viral|  17551    |  15261   |
+  | Predicted non-viral |  2011     |  4821     |
+  
+  
+### Confusion matrix of  model 2 
+ |     |  Actual Viral | Actual non-viral |
+  |-------|---------| --------|
+  | Predicted viral|   12374   |  7492   |
+  | Predicted non-viral |  7188       |  12590     |
+  
+  
+### Table of summary of models
+| Model      |    Overall Accuracy        |  TPR | FPR | FDR 
+| ------------- |-------------| -----|--------| -------|--------|
+| Null      | 50.66 |  0 | 0  | undefined
+| Model 1   | 56.8  |  89.7 |  76 | 46.5  | 
+| Model 2  | 63     | 63.2  | 37.3 | 37.7  |
+
+
+***Conclusion:*** From the table, the overall accuracy rates indicate that **model 2 (direct logistic regression with lasso)** performs better than **model 1 (regress then threshold)** while both perform better than the null model. Model 2 is 6% better than model 1 and 13% better than null model. Althought the TPR for the model 1 is much higher than the model 2, FPR and FDR are much lower for model 2. Thus, overall model 2 performs better than model 1.  
+
+***Reason:*** The reason why logistic regression works better for classification is that it handles the imbalance in the data well and is not too sensitive to adding or removing input data. Due to flat tails of the logit link and sharp increase in the middle, it handles the classification problem better than just fitting a linear model and thresholding. 
+
+```{r echo=FALSE, message=FALSE}
+##### Importiing, viewing, and analizing data
+online_news <- read.csv("./online_news.csv")
+#View(online_news)
+#str(online_news)
+
+##### Regress first and threshold second
+print("Histogram of shares")
+hist(online_news$shares) 
+# We should apply the log transformation since shares is very skewed 
+
+# After log transformation
+print("Histogram of log(shares)")
+hist(log(online_news$shares))
+
+
+# Fitting lasso regression and doing cross validation of K=10 folds to automate finding independent variables and training and testing my data multiple times simultaneously 
+
+library(gamlr) 
+
+# Creating a matrix of all the independent varaibles exculuding url from online_news data using the sparse.model.matrix function
+x = sparse.model.matrix(log(shares) ~ . - url, data=online_news)[,-1] # -1 drops intercept
+
+y = log(online_news$shares) # Pulling out `y' for convenience and taking the log of the dependent variable shares
+
+# Fiting lasso regression to the data and doing cross validation of k=10 folds using the cv.gamlr command which does both tasks
+# Verb = TRUE prints progress
+cvl = cv.gamlr(x, y, nfold=10, verb=TRUE)
+
+# Plotting out-of-sample deviance as a function of log lambda
+plot(cvl, bty="n")
+
+## CV minimum deviance selection
+b.min = coef(cvl, select="min")
+# value of lamda:
+log(cvl$lambda.min)
+
+sum(b.min!=0) # this gives the coefficent not 0
+
+##########
+
+# Predict number of shares
+lhat_shares = predict(cvl, x) # log value of shares
+hat_shares = exp(lhat_shares) # predicted values of shares
+#head (hat_shares, 50)
+
+# Changing predicted number of shares into viral prediction(t_viral)
+threshold_viral = ifelse(hat_shares > 1400, 1, 0)
+#head(threshold_viral, 50)
+
+# Creating new variable "viral"
+viral = ifelse(online_news$shares > 1400, 1, 0)
+#head(viral, 20)
+
+# Creating confusion matrix
+confusion_1= table(y = viral, yhat = threshold_viral)
+print(confusion_1)
+sum(diag(confusion_1))/sum(confusion_1) # This gives the sample accuracy for model 1
+
+##### Model 2
+
+# Running logistic lasso regression and cross validate with viral as the dependent variable
+# family = "binomial" in this code is used to do a logistic regression instead of normal regression
+#(verb just prints progress)
+viral_cvl = cv.gamlr(x, viral, nfold=10, family="binomial", verb=TRUE)
+
+# Plotting  the out-of-sample deviance as a function of log lambda
+plot(viral_cvl, bty="n")
+
+## CV minimum deviance selection
+b.min = coef(viral_cvl, select="min", type="response")
+log(viral_cvl$lambda.min)
+sum(b.min!=0) # This is random because of the CV randomness.
+
+# Predicting number of viral
+hat_viral = predict(viral_cvl, x)
+#head (hat_viral, 50)
+
+# Changing hat_viral to true/false prediction
+b_hat_viral = ifelse(hat_viral > 0.5, 1, 0)
+#head(b_hat_viral, 50)
+
+# Creating confusion matirx
+confusion_2= table(y = viral, yhat = b_hat_viral)
+print(confusion_2)
+sum(diag(confusion_2))/sum(confusion_2) # This is the sample accuracy of model 2
+
+
+##### Comaprison of models
+
+table(viral) # The actual number of viral or not viral articles
+20082/39644  # 50.66 percent of articles were not viral which is the null hypothesis
+
+print(confusion_1)
+sum(diag(confusion_1))/sum(confusion_1) # The sample accuracy for model 1 is 56.8 percent
+# Hence model 1 is (56.8-50.66) about a 6 percent improvement to the null model
+#17458/(17458+5058) # True positive rate of model 1 is 77.54 percent
+#15024/(5058+15024) # Fasle positive rate of model 1 is 74.81 percent
+#15024/(15024+17458)# False dicovery rate of model 1 is 46.25 percent
+
+print(confusion_2)
+sum(diag(confusion_2))/sum(confusion_2) # The sample accuracy of model 2 is 63 percent
+# Hence model 2 is 12.5 percent improvement to null model and about 6.2 percent improvement to model 1
+#12704/(12705+6857) # True positive rate is 64.95 percent which is worst than model 1
+#7811/(7811+12271) # False positive rate is 38.9 percent which is better than model 1 because lower is better 
+#7811/(7811+12705) # False discovery rate is 38.07 percent which is better than model 1 because lower is better
+
+# In conclusion based on True Positive Rate, False Positve Rate, False Discovery Rate, and general acuracy Model 2 does better than Model 1.
+
+```
+
+
+
+

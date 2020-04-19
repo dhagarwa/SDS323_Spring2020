@@ -1,0 +1,23 @@
+---
+title: "Clustering and PCA"
+author: "Bao Doquang, Dhwanit Agarwal, Akksay Singh and Shristi Singh"
+date: "April 20, 2020"
+output: pdf_document
+---
+
+Loading libraries: 
+```{r}
+
+library(ggplot2)
+library(foreach)
+library(LICORS)
+library(caret)
+
+```
+
+Loading data
+```{r}
+wine <- read.csv("~/GitHub/SDS323_Spring2020/hw3/q3/wine.csv")
+str(wine)
+```
+

@@ -3,7 +3,12 @@ library(tidyverse)
 library(class)
 library(mosaic)
 library(FNN)
+<<<<<<< HEAD:hw2/Question 1/question 1.R
+
+
+=======
 sclass = read.csv('../Question1/sclass.csv')
+>>>>>>> 9ed238f47e4aba9713684bdf3368718139a60ffe:hw2/Question1/question1.R
 
 sclass350 = subset(sclass, trim == '350')
 sclass65AMG = subset(sclass, trim == '65 AMG')
