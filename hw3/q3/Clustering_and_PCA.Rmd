@@ -5,7 +5,13 @@ date: "April 20, 2020"
 output: pdf_document
 ---
 
-Loading libraries: 
+I. Overview: 
+
+The data in wine.csv contains information on 11 chemical properties of 6497 different bottles of vinho verde wine from northern Portugal. Additionally, the data contains two other attributes about each wine. These two attributes are color (whether the wine is red or white) and quality (the quality of the wine, as judged on a 1-10 scale by a panel of certified wine snobs). Our object is to use just the 11 chemical properties (or suitable transformations thereof) of the 6497 different bottles of vinho verde wine to accurately predict the color and quality of the wine using a PCA and a clustering algorithm. 
+
+II. Data and Model:
+
+Loading libraries:- 
 ```{r}
 
 library(ggplot2)
@@ -15,9 +21,32 @@ library(caret)
 
 ```
 
-Loading data
+Loading data-
 ```{r}
 wine <- read.csv("~/GitHub/SDS323_Spring2020/hw3/q3/wine.csv")
 str(wine)
 ```
+
+PCA algorithm:
+
+```{r}
+
+```
+
+Clustering algorithm:
+
+```{r}
+
+```
+
+
+III. Results
+
+IV. Conclusion
+
+
+
+
+
+
 
