@@ -1,9 +1,16 @@
+library(rsample)  # data splitting 
+library(glmnet)   # implementing regularized regression approaches
+library(dplyr)    # basic data manipulation procedures
+library(ggplot2)  # plotting
+library(DAAG)
+library(MASS)
 # import data and examine it
 
-greenbuildings <- read.csv("~/GitHub/SDS323_Spring2020/hw3/q1/greenbuildings.csv")
-View(greenbuildings)
+greenbuildings <- read.csv("greenbuildings.csv")
+#View(greenbuildings)
 ok <- complete.cases(greenbuildings)
 greenbuildings <- greenbuildings[ok,]
+
 
 # note that shares is hugely skewed
 # probably want a log transformation here
@@ -22,7 +29,7 @@ library(gamlr)
 
 # i create a matrix of all my independent varaibles except for url from online_news data to make it easily readable for gamlr commands.
 # the sparse.model.matrix function.
-x = sparse.model.matrix( log(Rent) ~  . - CS_PropertyID - LEED -Energystar  , data=greenbuildings)[,-1] # do -1 to drop intercep
+x = sparse.model.matrix( log(Rent) ~  . - CS_PropertyID - LEED -Energystar  , data=greenbuildings, standardize=TRUE)[, -1] # do -1 to drop intercep
 
 y = log(greenbuildings$Rent) # pull out `y' too just for convenience and do log(shares)- dependent variable
 
@@ -30,9 +37,54 @@ y = log(greenbuildings$Rent) # pull out `y' too just for convenience and do log(
 # Here I fit my lasso regression to the data and do my cross validation of k=10 n folds
 # the cv.gamlr command does both things at once.
 #(verb just prints progress)
-cvl = cv.gamlr(x, y, nfold=5, verb=TRUE)
+cvl = cv.gamlr(x, y, nfold=10, verb=TRUE)
 
-coef(cvl)
+
 
 # plot the out-of-sample deviance as a function of log lambda
 plot(cvl, bty="n")
+
+min(cvl$cvm)       # minimum MSE
+## [1] 0.06615445
+cvl$lambda.min     # lambda for this min MSE
+## [1] 0.003585894
+
+
+cvl$cvm[cvr$lambda == cvl$lambda.1se]  # 1 st.error of min MSE
+## [1] 0.06908108
+cvl$lambda.1se  # lambda for this MSE
+## [1] 0.01516562
+
+#fitted coefficients at minimum MSE
+coef(cvl, select="min")
+
+
+# Apply CV Ridge regression to data
+cvr <- cv.glmnet(
+  x ,
+  y ,
+  alpha = 0
+)
+
+# plot MSE as a function of log(lambda)
+plot(cvr)
+
+min(cvr$cvm)       # minimum MSE
+## [1] 0.06679016  #value observed
+cvr$lambda.min     # lambda for this min MSE
+## [1] 0.03585894
+
+cvr$cvm[cvr$lambda == cvr$lambda.1se]  # 1 st.error of min MSE
+## [1] 0.06908108
+cvr$lambda.1se  # lambda for this MSE
+## [1] 0.0828388
+
+#fitted coefficients at minimum MSE
+coef(cvr, select="min")
+
+#Apply OLS to data
+linear_fit = lm(log(Rent) ~ . - CS_PropertyID - LEED -Energystar , data = greenbuildings) #no scaling  in linear model, need to include intercept term 
+cvlm = cv.lm(data = greenbuildings, linear_fit, m=10, plotit = FALSE, printit = FALSE)
+
+print(linear_fit)
+#MSE for OLS = 0.0659
