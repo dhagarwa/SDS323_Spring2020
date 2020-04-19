@@ -7,18 +7,16 @@ output: pdf_document
 
 I. Overview: 
 
-The data in wine.csv contains information on 11 chemical properties of 6497 different bottles of vinho verde wine from northern Portugal. Additionally, the data contains two other attributes about each wine. These two attributes are color (whether the wine is red or white) and quality (the quality of the wine, as judged on a 1-10 scale by a panel of certified wine snobs). Our object is to use just the 11 chemical properties (or suitable transformations thereof) of the 6497 different bottles of vinho verde wine to accurately predict the color and quality of the wine using a PCA and a clustering algorithm. 
+The data in wine.csv contains information on 11 chemical properties of 6497 different bottles of vinho verde wine from northern Portugal. Additionally, the data contains two other attributes about each wine. These two attributes are color (whether the wine is red or white) and quality (the quality of the wine, as judged on a 1-10 scale by a panel of certified wine snobs). Our objective is to use just the 11 chemical properties (or suitable transformations thereof) of the 6497 different bottles of vinho verde wine to accurately predict the color and quality of the wine using a PCA and a clustering algorithm. Futhermore we need to identify which dimensionality reduction technique makes more sense for this data. 
 
 II. Data and Model:
 
 Loading libraries:- 
 ```{r}
-
 library(ggplot2)
 library(foreach)
 library(LICORS)
 library(caret)
-
 ```
 
 Loading data-
@@ -27,26 +25,84 @@ wine <- read.csv("~/GitHub/SDS323_Spring2020/hw3/q3/wine.csv")
 str(wine)
 ```
 
-PCA algorithm:
 
+We take the subset of the dat so that only the chemical properties of the wine are in the data set
+```{r}
+wine_chem_prop <- wine[1:11]
+```
+
+We normalize the data by adjusting the scale so that measuring distance between points remains meaningful
+```{r}
+wine_chem_prop_norm = scale(wine_chem_prop, center = TRUE, scale = TRUE)
+```
+
+PCA algorithm:
 ```{r}
 
 ```
 
-Clustering algorithm:
+Clustering algorithm to determine color of wine:
+
+We begin with running k-means with 2 clusters and 25 starts and then examine our clusters. 
+```{r}
+clust_k2 = kmeanspp(wine_chem_prop_norm, 2, nstart = 25)
+
+which(clust_k2$cluster ==1)
+which(clust_k2$cluster ==2)
+sum(clust_k2$withinss)
+
+```
+
+We try to narrow down the variables that we want to compare before visualizing the clusters. 
+We do this by analyzing the correlation between each chemical property and a given color of wine.
+```{r}
+cor(wine_chem_prop, as.numeric(wine$color))
+```
+
+#Note that here higher positive correlation means that the property is more closely
+#associated with white wine. We will choose the covariates with the greatest
+#correlation (positive or negative) with wine color. In this case, it would be
+#volatile acidity, chlorides, total sulfur dioxide, and sulphates.
+
+#Comparing select variables by wine color.
 
 ```{r}
+pairs(wine_df[, c(2,5,7,10)], col = c("red", "grey")[wine_df$color],
+      main = "Chemical Properties of wine: Red vs White")
+
+#Now, let's look at cluster.
+pairs(wine_df[, c(2,5,7,10)], col = c("red", "grey")[clust_k2$cluster],
+      main = "Chemical Properties of wine: Cluster 1 vs Cluster 2")
+
+#At least on sight, the clustering alogrithm seems to seperate the red
+#and white wines effectively.
+
+#We assign red wine to cluster 1 and white wine to cluster 2, and show the 
+#confusion matrix.
+y_hat1 = clust_k2$cluster
+y_hat1 = ifelse(y_hat1 ==1, "red", "white")
+
+confusionMatrix(data = as.factor(y_hat1), reference = wine_df$color)
+
+#To be thurough, we will run the null model.
+
+confusionMatrix(data = as.factor(rep("white", length(clust_k2$cluster))), reference = wine_df$color)
+
+#As we see, from the confusion matrix, clustering seems to be a fairly good
+#method of sorting red and white wines. 
+
+#However, clustering does not seem to be the most appropriate method of determining
+#if we are interested in determining what chemical balance is associated with a given
+#wine color. Let's consider this while we look at another dimension reduction 
+#technique, principle components analysis.
 
 ```
 
 
 III. Results
 
+
+
 IV. Conclusion
-
-
-
-
-
 
 
