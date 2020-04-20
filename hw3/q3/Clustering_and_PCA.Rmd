@@ -142,10 +142,10 @@ y_hat3 = ifelse(clustk2$cluster == 1, "low", "high")
 
 confusionMatrix(data = as.factor(y_hat3), reference = as.factor(wine_qual$quality))
 ```
+
 Our accuracy is 61%, which is worse than our null model.
 PCA may be more appropriate for this classificiation problem. We've already run 
-our PCA algorith, so let's
-go straight to the plots.
+our PCA algorithm, so we can go ahead to make the plots.
 ```{r}
 
 qplot(pc_chem$x[,1], pc_chem$x[,2], 
