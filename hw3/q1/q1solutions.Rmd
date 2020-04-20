@@ -6,13 +6,13 @@ output: html_document
 ---
 
 ```{r}
-
 library(rsample)  # data splitting 
 library(glmnet)   # implementing regularized regression approaches
 library(dplyr)    # basic data manipulation procedures
 library(ggplot2)  # plotting
 library(DAAG)
 library(MASS)
+
 # import data and examine it
 
 greenbuildings <- read.csv("~/GitHub/SDS323_Spring2020/hw3/q1/greenbuildings.csv")
