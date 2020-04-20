@@ -1,0 +1,92 @@
+---
+title: "Social media market segmentation"
+author: "Dhwanit"
+date: "4/19/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+### Problem statement
+Twitter tweets from the followers of a consumer brand were analyzed. Every tweet has been classified as belonging to a category like sports, cooking, beauty, fitness etc. by annotators. 
+
+These tweets can help in market segmentation i.e., to classify social market into segments to help understand the customer base better in terms of their interests, preferences, social media activity etc. This can help in targeted advertisement campaigns, better reach to customers, tweak promotional offers according to customers etc., in effect helping the business to grow. 
+
+Our task here to is to identify these segments based on intuition and sound data analysis and interpret them in a coherent manner. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(dev = 'pdf')
+library(hrbrthemes)
+library(kableExtra)
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra) # clustering algorithms & visualization
+library(LICORS)  # for kmeans++
+library(ggcorrplot)
+library(reshape2)
+library(ggplot2)
+library(viridis)
+library(DT)
+library(plotly)
+
+```
+
+
+
+### Steps 
+
+The broad outline of the approach we took to carry out this task as follows:
+
+#### 1. Exploratory data analysis
+We find out that the data has 36 features available for each user. These 36 features specify the number of tweets in each category (like online_gaming, politics, cooking etc.) by that user. It is intuitive to first check for correlation between these features as that can help us in finding out correlated features. Since correlation is not sensitive to scaling, we just run plot correlation for the raw data. 
+
+```{r echo=TRUE, message=FALSE, figure.width=18, fig.height=18}
+sm_data <- read.csv("social_marketing.csv")
+#summary(sm_data)
+#head(sm_data, 10)
+
+sm_feat_raw <- sm_data[,2:length(sm_data)]
+
+
+
+# Creating a correlation plot 
+
+cormat <- round(cor(sm_feat_raw), 2)
+#head(cormat[, 1:6])
+ggcorrplot(cormat, hc.order = TRUE, 
+           type = "lower", 
+           outline.color = "white") + theme( axis.text.x = element_text(angle=90, hjust=1))
+
+
+```
+
+
+Correlation plot reveals some interesting and intutitive correlations between features. Some very strong +ve correlations can be seen, like between  health nutrition and personal fitness, cooking and fashion, online_gaming and college_uni. These are intuitive like people who are interested in health_nutrition also are likely to tweet about personal fitness. A rather peculiar one is between sports_fandom and religion which doesn't seem so intuitive. (Maybe if you are a fan of God, you are likely to be a fan of sports team :) ).
+
+
+### 2. Segmentation using clustering approach
+
+In order to see if these features and correlation can help to identify some interesting groups of users with shared features, we decide to try the clustering approach to help identify some number of clusters. We decide to go for the KMeans++ clustering approach. The first step in this clustering is to scale the data to zero mean and unit variance of the columns. This will even out the intrinsic variations in the features data and help us in clustering. 
+
+
+```{r echo=TRUE, message=FALSE}
+sm_user <- sm_data[, 1]
+
+# Scaling and centering data
+sm_sca = scale(sm_feat_raw, center=TRUE, scale=TRUE)
+
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

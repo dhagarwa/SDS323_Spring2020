@@ -50,7 +50,7 @@ cvl$lambda.min     # lambda for this min MSE
 ## [1] 0.003585894
 
 
-cvl$cvm[cvr$lambda == cvl$lambda.1se]  # 1 st.error of min MSE
+cvl$cvm[cvl$lambda == cvl$lambda.1se]  # 1 st.error of min MSE
 ## [1] 0.06908108
 cvl$lambda.1se  # lambda for this MSE
 ## [1] 0.01516562
