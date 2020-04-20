@@ -26,7 +26,7 @@ sm_feat_raw <- sm_data[,2:length(sm_data)]
 
 cormat <- round(cor(sm_feat_raw), 2)
 head(cormat[, 1:6])
-ggcorrplot(cormat, hc.order = TRUE, type = "lower", outline.color = "white")
+ggcorrplot(cormat, hc.order = TRUE, type = "lower", outline.color = "white") + theme( axis.text.x = element_text(angle=90, hjust=1))
 
 ##Some very strong +ve correlations can be seen, like between  health nutrition and personal fitness, cooking and fashion, online_gaming and college_uni.
 ##A rather peculiar one is between sports_fandom and religion (Probably if you are a fan of God, you are likely to be a fan of sports team :) ). 
@@ -43,30 +43,30 @@ sm_sca = scale(sm_feat_raw, center=TRUE, scale=TRUE)
 
 
 
-set.seed(123)
-# 
-# # function to compute total within-cluster sum of square 
-# wss <- function(k) {
-#   kmeans(sm_sca, k, nstart = 10 )$tot.withinss
-# }
-# 
-# # Compute and plot wss for k = 1 to k = 15
-# k.values <- 1:15
-# 
-# # extract wss for 2-15 clusters
-# wss_values <- map_dbl(k.values, wss)
-# 
-# plot(k.values, wss_values,
-#      type="b", pch = 19, frame = FALSE, 
-#      xlab="Number of clusters K",
-#      ylab="Total within-clusters sum of squares")
-# 
-# 
-# 
-# fviz_nbclust(sm_sca, kmeans, method = "silhouette")
+set.seed(100)
 
-# Run k-means with 6 clusters and 25 starts
-clust1 = kmeanspp(sm_sca, 6, nstart=25)
+# function to compute total within-cluster sum of square
+wss <- function(k) {
+  kmeans(sm_sca, k, nstart = 10 )$tot.withinss
+}
+
+# Compute and plot wss for k = 1 to k = 15
+k.values <- 1:15
+
+# extract wss for 2-15 clusters
+wss_values <- map_dbl(k.values, wss)
+
+plot(k.values, wss_values,
+     type="b", pch = 19, frame = FALSE,
+     xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+
+
+fviz_nbclust(sm_sca, kmeans, method = "silhouette")
+
+# Run k-means with 8 clusters and 25 starts
+clust1 = kmeanspp(sm_sca, 8, nstart=25)
  
 fviz_cluster(clust1, data = sm_sca,  stand = FALSE, 
             ellipse.type = "t", geom=c("point"), main="Kmeans++ clusters visualization on first two principal components") + theme_bw()
@@ -75,9 +75,7 @@ mu = attr(sm_sca,"scaled:center")
 sigma = attr(sm_sca,"scaled:scale")
 
 
-# What are the clusters?
-clust1$center  # not super helpful
-clust1$center
+
 
 rs      <- as.data.frame(t(clust1$center))
 rs$category <- rownames(rs)
@@ -109,10 +107,10 @@ tmp %>%
   facet_wrap(~cluster) + theme(axis.text.x = element_text(angle=90, hjust=1))
 
 
-clust1$center[1,]
-clust1$center[2,]*sigma + mu
-clust1$center[4,]*sigma + mu
- 
+# clust1$center[1,]
+# clust1$center[2,]*sigma + mu
+# clust1$center[4,]*sigma + mu
+
 
 fviz_cluster(clust1, data = sm_sca, choose.vars = c("cooking", "online_gaming"), stand = FALSE,
              ellipse.type = "norm", geom=c("point")) + theme_classic()
@@ -171,7 +169,7 @@ sm_pca <- prcomp(sm_feat_raw,
                  center = TRUE,
                  scale = TRUE) 
 
-summary(sm_pca)
+#summary(sm_pca)
 print(sm_pca)
 # Screeplot
 pr_var <-  sm_pca$sdev ^ 2
@@ -182,7 +180,7 @@ plot(pve, xlab = "Principal Component", ylab = "Proportion of Variance Explained
 plot(cumsum(pve), xlab = "Principal Component", ylab = "Cumulative Proportion of Variance Explained", ylim =c(0,1), type = 'b')
 
 
-##PCA results: Total 36 PCs. 10 components explain about 50% of variance, 19 components about 75% of variance, 22 components explain 81% of variance
+##PCA results: Total 36 PCs. 10 components explain about 60% of variance, 18 components about 80% of variance, 25 components explain 90% of variance
 
 # Rotate loadings
 rot_loading <- varimax(sm_pca$rotation[, 1:15])
@@ -191,42 +189,11 @@ rot_loading
 ##Varimax transformations helps simplify the interpretation of PC. For ex: PC1 is negatively associated with  religion, parenting, sports_fandom, family, school. 
 ##PC2 is negatively associated with cooking, beauty and fashion. PC3 is negatively associated with politics, news while positively with automotive.
 ##PC 4 is negatively associated with health_nutrition, outdoors, personal_fitness. PC5 is more about online_gaming, college_uni, sports_playing. PC7 is about tv_film, crafts and art.  Some other intepretable
-##PCs: PC9 is about shopping, music, family, travel.. Another notable PC is PC9 which negatively associated with spam and adult content.
+## Another notable PC is PC9 which negatively associated with spam and adult content.
 ## So any entry scoring highly negatively on this would be be a good candidate for spam and bot. 
 
-# A biplot I like a bit better
-loadings = sm_pca$rotation
-scores = sm_pca$x
-ggplot2::qplot(scores[,1], scores[,2], xlab='Component 1', ylab='Component 2')
 
 
 
 
-
-# Predict PCs
-predict(ir.pca, 
-        newdata=tail(log.ir, 2))
-
-
-
-# library(devtools)
-# install_github("ggbiplot", "vqv")
-# 
-# library(ggbiplot)
-# g <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, 
-#               groups = ir.species, ellipse = TRUE, 
-#               circle = TRUE)
-# g <- g + scale_color_discrete(name = '')
-# g <- g + theme(legend.direction = 'horizontal', 
-#                legend.position = 'top')
-# print(g)
-
-require(caret)
-trans = preProcess(iris[,1:4], 
-                   method=c("BoxCox", "center", 
-                            "scale", "pca"))
-PC = predict(trans, iris[,1:4])
-summary(PC)
-# Retained PCs
-head(PC, 3)
 
