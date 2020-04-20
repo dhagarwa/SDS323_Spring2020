@@ -39,7 +39,7 @@ The broad outline of the approach we took to carry out this task as follows:
 #### 1. Exploratory data analysis
 We find out that the data has 36 features available for each user. These 36 features specify the number of tweets in each category (like online_gaming, politics, cooking etc.) by that user. It is intuitive to first check for correlation between these features as that can help us in finding out correlated features. Since correlation is not sensitive to scaling, we just run plot correlation for the raw data. 
 
-```{r echo=TRUE, message=FALSE, figure.width=18, fig.height=18}
+```{r echo=TRUE, message=FALSE, figure.width=10, fig.height=10}
 sm_data <- read.csv("social_marketing.csv")
 #summary(sm_data)
 #head(sm_data, 10)
