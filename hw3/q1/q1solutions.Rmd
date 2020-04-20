@@ -1,3 +1,12 @@
+---
+title: "Predictive model building"
+author: "Bao Doquang, Dhwanit Agarwal, Akksay Singh and Shristi Singh"
+date: "April 19, 2020"
+output: html_document
+---
+
+```{r}
+
 library(rsample)  # data splitting 
 library(glmnet)   # implementing regularized regression approaches
 library(dplyr)    # basic data manipulation procedures
@@ -88,3 +97,4 @@ cvlm = cv.lm(data = greenbuildings, linear_fit, m=10, plotit = FALSE, printit = 
 
 print(linear_fit)
 #MSE for OLS = 0.0659
+```
