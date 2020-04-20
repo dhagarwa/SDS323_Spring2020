@@ -9,8 +9,6 @@ I. Overview:
 
 The data in wine.csv contains information on 11 chemical properties of 6497 different bottles of vinho verde wine from northern Portugal. Additionally, the data contains two other attributes about each wine. These two attributes are color (whether the wine is red or white) and quality (the quality of the wine, as judged on a 1-10 scale by a panel of certified wine snobs). Our objective is to use just the 11 chemical properties (or suitable transformations thereof) of the 6497 different bottles of vinho verde wine to accurately predict the color and quality of the wine using a PCA and a clustering algorithm. Futhermore we need to identify which dimensionality reduction technique makes more sense for this data. 
 
-II. Data and Model:
-
 Loading libraries:- 
 ```{r}
 library(ggplot2)
@@ -20,12 +18,13 @@ library(caret)
 library(e1071)
 ```
 
+II. Data
+
 Loading data-
 ```{r}
 wine <- read.csv("~/GitHub/SDS323_Spring2020/hw3/q3/wine.csv")
 str(wine)
 ```
-
 
 We take the subset of the data so that only the chemical properties of the wine are in the data set
 ```{r}
@@ -37,10 +36,11 @@ We normalize the data by adjusting the scale so that measuring distance between 
 wine_chem_prop_norm = scale(wine_chem_prop, center = TRUE, scale = TRUE)
 ```
 
+III. Model & Results
+
 Clustering algorithm to determine color of wine:
 
 We begin with running k-means with 2 clusters and 25 starts and then examine our clusters. 
-
 ```{r}
 clustk2 = kmeanspp(wine_chem_prop_norm, 2, nstart = 25)
 
@@ -49,14 +49,12 @@ which(clustk2$cluster ==2)
 sum(clustk2$withinss)
 ```
 
-
 By analyzing the correlation between each chemical property and a given color of wine We try to narrow down the variables that we want to compare before visualizing the clusters. 
 ```{r}
 cor(wine_chem_prop, as.numeric(wine$color))
 ```
 From the output above, We will choose the covariates with the greatest positive or negative correlation with wine color. 
 Hence we will choose volatile.acidity, chlorides, total.sulfur.dioxide, and sulphates. In this output, higher positive correlation means that that specific chemical property is more closelyassociated with white wine.
-
 
 We now compare select variables and wine color:
 ```{r}
@@ -91,15 +89,12 @@ From looking at the confusion matrix it is apparent that clustering is an effect
 Principle Components Analysis Algorithm:
 
 We begin by trying the dimension reduction technique, principle components analysis (PCA). PCA allows for mixed membership of covariates to construct principle components. We begin our analysis by trying to classify wine by color.
-
 ```{r}
 pc_chem = prcomp(wine_chem_prop_norm)
 pc_chem$rotation[,1]
 ```
 
-
 Data Visualization: 
-
 ```{r}
 qplot(pc_chem$x[,1], pc_chem$x[,2], 
       color=wine$color, xlab='Component 1', 
@@ -108,7 +103,6 @@ qplot(pc_chem$x[,1], pc_chem$x[,2],
 
 In the graph above we notice that red and white wine split roughly along the line cp2 = cp1 - 2.5. 
 Hence, if a point lands on the right side of the line then it is most likely white wine but if the point lands on the left side of the line then it is most likely red wine. 
-
 ```{r}
 
 y_hat2 = pc_chem$x[,2] - 2*pc_chem$x[,1] - 2.5
@@ -125,8 +119,6 @@ Next, we try to classify wine by quality.
 
 We begin by setting k = 10 as wines are rated on a scale of 1 to 10.
 We prceed by constructing an elbow plot to check if k = 10 is an appropriate choice for k. 
-
-
 ```{r}
 
 k_grid = seq(2,20, by = 1) # This is a vector containing various values of k.
@@ -140,13 +132,13 @@ plot(k_grid, SSE_grid)
 ```
 
 From the elbow plot above, it is apparent that many k values can be called the elbow and k=10 is a resonable choice among them so we can move forword and cluster the data. 
-
 ```{r}
 clustk10 = kmeanspp(wine_chem_prop_norm, 10, nstart = 25)
 
 cor(wine_chem_prop, as.numeric(wine$quality))
 
 ```
+
 Unfortunately, there are not that many chemical properties with a particular strong corollation with quality.
 Some chemcial properties that we select to find the corrolation between that chemical properties and quality are 
 volatile.acidity, chlorides, density, and alcohol.    
@@ -165,6 +157,7 @@ legend("right",
        title = "Score")
 
 ```
+
 From the graphs above it is apparent that there are no clear clusters. 
 
 Since this was not that useful we will not try categorizing the wines into only two quality groups, "low quality" wine and "high quality" wine. 
@@ -185,6 +178,7 @@ pairs(wine_qual[, c(2,5,8,11)],
       main = "Chemical properties of Wine: Cluster 1 vs Cluster 2")
 
 ```
+
 We make a confusion matrix, to check if the clustering algorithm preforms significantly better if we only have the two categories low and high quality wines respectively instead of k = 10 many clusters.
 ```{r}
 
@@ -196,7 +190,6 @@ confusionMatrix(data = as.factor(y_hat3), reference = as.factor(wine_qual$qualit
 
 Our accuracy is 61.67%, which is worse than our null model.
 To see if PCA is more appropriate for this classificiation problem we can use our PCA algorithm results to make our desired plots.
-
 ```{r}
 
 qplot(pc_chem$x[,1], pc_chem$x[,2], 
@@ -204,8 +197,8 @@ qplot(pc_chem$x[,1], pc_chem$x[,2],
       ylab='Component 2')
 
 ```
-#Let's look at a few more pair-wise comparision.
 
+We look at some more pair-wise comparision to be more meticulous.
 ```{r}
 
 pairs(pc_chem$x[, c(1,2,3,4)],
@@ -213,9 +206,9 @@ pairs(pc_chem$x[, c(1,2,3,4)],
 
 ```
 
-#Again, there is no clear delineation what properties correspond to quallity
-#rankings. Again, let's look at sorting on just "high" and "low" quality wines.
+From looking at the results above there is no apparent way to tell which chemical properties correspond to quallity ratings. 
 
+Now, we look on the basis of high and low quality wines that we defined previously on the basis of quality rating.
 ```{r}
 
 qplot(pc_chem$x[,1], pc_chem$x[,2], 
@@ -223,20 +216,13 @@ qplot(pc_chem$x[,1], pc_chem$x[,2],
       ylab='Component 2',geom = c("point", "abline"))
 
 ```
-#There is not clean divide among the types of wine.To verify, let's look at
-#pairwise plots for the first four principle components.
 
+It seems that there is no visual divide among the types of wine.
+
+To further verify this, we look at pairwise plots for the first four principle components.
 ```{r}
-
-
 pairs(pc_chem$x[, c(1,2,3,4)],
       col = c("red", "blue")[as.factor(wine_qual$quality)])
 ```
 
-#It doesn't seem that PCA is capable of sorting on quality in this instance.
-
-
-
-III. Results
-
-IV. Conclusion
+Hence, in this case PCA is not capable of sorting the wines on the basis of quality.
