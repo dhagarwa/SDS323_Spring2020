@@ -15,7 +15,6 @@ Our task here to is to identify these segments based on intuition and sound data
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_chunk$set(dev = 'pdf')
 library(hrbrthemes)
 library(kableExtra)
 library(tidyverse)  # data manipulation
