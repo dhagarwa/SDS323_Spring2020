@@ -4,9 +4,12 @@ library(dplyr)    # basic data manipulation procedures
 library(ggplot2)  # plotting
 library(DAAG)
 library(MASS)
+library("mvtnorm") 
+library(HDCI)
+library(olsrr)
 # import data and examine it
 
-greenbuildings <- read.csv("~/GitHub/SDS323_Spring2020/hw3/q1/greenbuildings.csv")
+greenbuildings <- read.csv("greenbuildings.csv")
 #View(greenbuildings)
 ok <- complete.cases(greenbuildings)
 greenbuildings <- greenbuildings[ok,]
@@ -34,6 +37,17 @@ x = sparse.model.matrix( log(Rent) ~  . - CS_PropertyID - LEED -Energystar  , da
 y = log(greenbuildings$Rent) # pull out `y' too just for convenience and do log(shares)- dependent variable
 
 
+
+#Apply OLS to data
+linear_fit = lm(log(Rent) ~ . - CS_PropertyID - LEED -Energystar , data = greenbuildings) #no scaling  in linear model, need to include intercept term 
+cvlm = cv.lm(data = greenbuildings, linear_fit, m=10, plotit = FALSE, printit = FALSE)
+
+print(linear_fit)
+#MSE for OLS = 0.0659
+confint(linear_fit)
+ols_plot_resid_qq(linear_fit)
+ols_test_correlation(linear_fit)
+ols_plot_resid_fit(linear_fit)
 # Here I fit my lasso regression to the data and do my cross validation of k=10 n folds
 # the cv.gamlr command does both things at once.
 #(verb just prints progress)
@@ -82,9 +96,13 @@ cvr$lambda.1se  # lambda for this MSE
 #fitted coefficients at minimum MSE
 coef(cvr, select="min")
 
-#Apply OLS to data
-linear_fit = lm(log(Rent) ~ . - CS_PropertyID - LEED -Energystar , data = greenbuildings) #no scaling  in linear model, need to include intercept term 
-cvlm = cv.lm(data = greenbuildings, linear_fit, m=10, plotit = FALSE, printit = FALSE)
+## residual bootstrap Lasso
+set.seed(0)
+obj <- bootLasso(x = x, y = y, B = 10)
+# confidence interval
+obj$interval
+#optimal lambda 
+obj$lambda.opt
 
-print(linear_fit)
-#MSE for OLS = 0.0659
+
+
