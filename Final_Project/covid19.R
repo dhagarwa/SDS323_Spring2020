@@ -1,9 +1,11 @@
 library(ggplot2)
 library(foreach)
 library(LICORS)
+library(lattice)
 library(caret)
 library(reshape2)
 library(olsrr)
+
 confirmed <- read.csv("../COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
 
 deaths <- read.csv("../COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
