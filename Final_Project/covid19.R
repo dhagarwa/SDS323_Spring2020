@@ -6,11 +6,11 @@ library(caret)
 library(reshape2)
 library(olsrr)
 
-confirmed <- read.csv("../COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
+confirmed <- read.csv("C:/Users/shris/OneDrive/Documents/GitHub/SDS323_Spring2020/Final_Project/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
 
-deaths <- read.csv("../COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
+deaths <- read.csv("C:/Users/shris/OneDrive/Documents/GitHub/SDS323_Spring2020/Final_Project/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
 
-recovered <- read.csv("../COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")
+recovered <- read.csv("C:/Users/shris/OneDrive/Documents/GitHub/SDS323_Spring2020/Final_Project/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")
 
 summary(confirmed)
 
