@@ -1,4 +1,5 @@
-### 1. Introduction
+1. Introduction
+---------------
 
 Coronaviruses are a family of human pathogens and have been responsible
 for a variety of respiratory diseases in humans ranging from common cold
@@ -24,7 +25,8 @@ progresses. Furthermore, we fit the model to the epidemic curves of
 these countries to make forecasts about the peak of the epidemic and the
 flattening of the curve.
 
-### 2. Data visualization and exploratory analysis
+2. Data visualization and exploratory analysis
+----------------------------------------------
 
 The COVID-19 data used in this analysis is available on the public git
 repository
@@ -132,57 +134,20 @@ of confirmed cases on each date since then till now.
 Below we plot the progression of the disease (confirmed, recovered,
 deaths) in a few selected countries.
 
-    countries = c("Italy", "Spain", "Germany", "India", "Sweden", "Singapore", "Iran", "Korea, South")
-
-    confirmed_countries = confirmed[confirmed$Country.Region %in% countries,]
-    deaths_countries = deaths[deaths$Country.Region %in% countries,]
-    recovered_countries = recovered[recovered$Country.Region %in% countries,]
-
-
-
-    ### EXTRACTING CONFIRMED DATA FOR COUNTRIES
-    confirmed_countries_melt = melt(confirmed_countries, id=c("Province.State", "Country.Region", "Lat", "Long"), variable.name = "Day")
-    confirmed_countries_melt = confirmed_countries_melt[which(confirmed_countries_melt$value > -1),]
-    confirmed_countries_melt$days_since = rep(1:109, each=8)
-    #View(confirmed_countries_melt)
-    #Plotting the data
-    ggplot(confirmed_countries_melt, aes(x=days_since, y=log(value), group=Country.Region, color=Country.Region)) +
-      geom_point() +
-      geom_line() + xlab("Days since Jan 22 ") + ylab("log(Confirmed cases)")  + ggtitle("Confirmed cases plot for different countries with days since Jan 22") 
-
-![](covid19_files/figure-markdown_strict/unnamed-chunk-2-1.png)
-
-    ###EXTRACTING RECOVERED DATA OF ITALY 
-    recovered_countries_melt = melt(recovered_countries, id=c("Province.State", "Country.Region", "Lat", "Long"), variable.name = "Day")
-    recovered_countries_melt = recovered_countries_melt[which(recovered_countries_melt$value > -1),]
-    recovered_countries_melt$days_since = rep(1:109, each=8)
-    ggplot(recovered_countries_melt, aes(x=days_since, y=log(value), group=Country.Region, color=Country.Region)) +
-      geom_point() +
-      geom_line() + xlab("Days since Jan 22 ") + ylab("log(Recovered cases)")  + ggtitle("Recovered cases plot for different countries with days since Jan 22") 
-
-![](covid19_files/figure-markdown_strict/unnamed-chunk-2-2.png)
-
-    ###EXTRACTING DEATHS DATA OF ITALY 
-    deaths_countries_melt = melt(deaths_countries, id=c("Province.State", "Country.Region", "Lat", "Long"), variable.name = "Day")
-    deaths_countries_melt = deaths_countries_melt[which(deaths_countries_melt$value > -1),]
-    deaths_countries_melt$days_since = rep(1:109, each=8)
-    ggplot(deaths_countries_melt, aes(x=days_since, y=log(value), group=Country.Region, color=Country.Region)) +
-      geom_point() +
-      geom_line() + xlab("Days since Jan 22 ") + ylab("log(Deaths)")  + ggtitle("Deaths plot for different countries with days since Jan 22") 
-
-![](covid19_files/figure-markdown_strict/unnamed-chunk-2-3.png)
+![](covid19_files/figure-markdown_strict/unnamed-chunk-2-1.png)![](covid19_files/figure-markdown_strict/unnamed-chunk-2-2.png)![](covid19_files/figure-markdown_strict/unnamed-chunk-2-3.png)
 
 We can see from the plots that South Korea has successfully flattened
 the curve and countries like Germany and Italy have started flattening.
 On the other hand, India and Singapore are still far from flattening the
 curve.
 
-### 3. Formulation of SIRD model
+3. Formulation of SIRD model
+----------------------------
 
 In this section, we discuss the basics of the SIRD model to simulate
 epidemic progression with time.
 
-#### 3.1 Discrete model
+### 3.1 Discrete model
 
 Within this model of the evolution of an epidemic outbreak, people can
 be divided into different classes. In the susceptible (S), infected (I),
@@ -193,50 +158,71 @@ of susceptible people. The discrete SIRD model can be written as
 follows:
 
 $$
+\\begin{aligned}
 S(t) - S(t-1) = -\\frac{\\alpha}{N} S(t-1)I(t-1), \\\\
 I(t) - I(t-1) = \\frac{\\alpha}{N} S(t-1)I(t-1) - \\beta I(t-1) - \\gamma I(t-1), \\\\
 R(t) - R(t-1) = \\beta I(t-1), \\\\
-D(t) - D(t-1) = \\gamma I(t-1) ,
+D(t) - D(t-1) = \\gamma I(t-1),
+\\end{aligned}
 $$
 
 The basic reproduction number *R*<sub>0</sub> is then defined as
 $$
+\\begin{aligned}
 R\_{0} := \\frac{\\alpha}{\\beta + \\gamma}. 
+\\end{aligned}
 $$
 
 Since the number of susceptible people is hard to determine and depends
 on the population, lockdown measures, social distancing etc, we take a
 different approach to estimate *R*<sub>0</sub> as mentioned in Ref 1.
-Let us denote $X(t) := X(t) - X(t-1) $ for *X* = *I*, *R*, *D*. Now we
-define,
+Let us denote *Δ**X*(*t*) := *X*(*t*) − *X*(*t* − 1) for
+*X* = *I*, *R*, *D*. Now we define,
 $$
+\\begin{aligned}
 C\\Delta X(T) := \\sum\_{t=1}^{T} \\Delta X(t) \\textit{,     and  }\\\\ 
 \\mathbf{C \\Delta X} (T) := \[C\\Delta X(1), C\\Delta X(2), ..., C\\Delta X(T)\]^{T} . 
+\\end{aligned}
 $$
 
 Here C stands for cumulative. Using the approximation *S*(*t* − 1) ≈ *N*
 (true if susceptible population is much less than the population of the
 country), we can get
-$$ 
+$$
+\\begin{aligned}
 R\_{0} = \\frac{\\alpha}{\\beta + \\gamma} = \\frac{I(t) - I(t-1) + R(t) - R(t-1) + D(t) - D(t-1)}{R(t) - R(t-1) + D(t) - D(t-1)}.
+\\end{aligned}
 $$
  Summing this equation over time we get,
 $$
+\\begin{aligned}
 \\frac{C\\Delta I(t) +C\\Delta R(t) + C\\Delta D(t) }{C\\Delta R(t) + C \\Delta D(t)} = R\_{0}.
+\\end{aligned}
 $$
  Based on this, we can get a coarse estimate for *R*<sub>0</sub> by
 finding a least squares solution to the following regression problem:  
-\[**C****Δ****I****(****t****)** **+** **C****Δ****R****(****t****)** **+** **C****Δ****D****(****t****)**\] = \[**C****Δ****R****(****t****)** **+** **C****Δ****D****(****t****)**\]*R*<sub>0</sub>,
- with solution given by
-*R̂*<sub>0</sub> = (\[**C****Δ****R****(****t****)** **+** **C****Δ****D****(****t****)**\]<sup>*T*</sup>\[**C****Δ****R****(****t****)** **+** **C****Δ****D****(****t****)**\])<sup> − 1</sup>\[**C****Δ****R****(****t****)** **+** **C****Δ****D****(****t****)**\]<sup>*T*</sup>\[**C****Δ****I****(****t****)** **+** **C****Δ****R****(****t****)** **+** **C****Δ****D****(****t****)**\].
- Similarly, the case fatality rate (*β̂*) and case recovery rate (*γ̂*)
-can be estimated as:
 $$
+\\begin{aligned}
+\[\\mathbf{C\\Delta I(t) +C\\Delta R(t) + C\\Delta D(t)}\] = \[\\mathbf{C\\Delta R(t) + C \\Delta D(t)}\] R\_{0}, 
+\\end{aligned}
+$$
+ with solution given by
+$$
+\\begin{aligned}
+\\hat{R}\_{0} = (\[\\mathbf{C\\Delta R(t) + C \\Delta D(t)}\]^{T}\[\\mathbf{C\\Delta R(t) + C \\Delta D(t)}\])^{-1} \[\\mathbf{C\\Delta R(t) + C \\Delta D(t)}\]^{T}  \[\\mathbf{C\\Delta I(t) +C\\Delta R(t) + C\\Delta D(t)}\].
+\\end{aligned}
+$$
+
+Similarly, the case fatality rate (*β̂*) and case recovery rate (*γ̂*) can
+be estimated as:
+$$
+ \\begin{aligned}
  \\hat{\\beta} = (\[\\mathbf{C\\Delta I(t) }\]^{T}\[\\mathbf{C\\Delta I(t) }\])^{-1} \[\\mathbf{C\\Delta I(t)}\]^{T}  \[\\mathbf{C\\Delta R(t) }\], \\\\
  \\hat{\\gamma} = (\[\\mathbf{C\\Delta I(t) }\]^{T}\[\\mathbf{C\\Delta I(t)}\])^{-1} \[\\mathbf{C\\Delta I(t) }\]^{T}  \[\\mathbf{ C\\Delta D(t)}\].
+ \\end{aligned}
  $$
 
-#### 3.2. Continuous model
+### 3.2. Continuous model
 
 In the continuous, the number of people in each class is a function of
 conitnuous time. So S(t) denotes the susceptible people at a time t. The
@@ -244,10 +230,12 @@ mean-field kinetics of the SIRD epidemic evolution is described by the
 following system of differential equations:
 
 $$
+\\begin{aligned}
 \\frac{dS}{dt} = -\\frac{\\alpha}{N} S(t)I(t), \\\\
 \\frac{dI}{dt} = \\frac{\\alpha}{N} S(t)I(t) - \\beta I(t) - \\gamma I(t), \\\\
 \\frac{dR}{dt} = \\beta I(t), \\\\
 \\frac{dD}{dt} = \\gamma I(t) ,
+\\end{aligned}
 $$
 
 with initial condition
@@ -262,13 +250,14 @@ least the gross features of the full time course of the outbreak.
 ![SIRD model](SIRD.png){Above figures shows SIRD model classes and
 change per unit time shown above arrows.}
 
-### 4 Results
+4 Results
+---------
 
 In this section we present our results for basic reproduction number,
 case fatality rate, case recovery ratios and time series forecasting for
 Germany and India.
 
-#### 4.1 Results for Germany
+### 4.1 Results for Germany
 
 We first use the discrete model to find these parameters and predict
 time series for Germany. We use the time series data available and for
@@ -405,15 +394,15 @@ these parameters.
 We plot plot the estimates and the corresponding 99% confidence
 intervals for *R*<sub>0</sub>, *β̂*, *γ̂* as below.
 
-    ggplot(R0_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab("R0") + ggtitle("R0 estimate evolution ")
+    ggplot(R0_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab("R0") + ggtitle("Germany: R0 estimate evolution ")
 
 ![](covid19_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
-    ggplot(beta_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab("case recovery ratio") + ggtitle("case recovery ratio estimate evolution ")
+    ggplot(beta_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab("case recovery ratio") + ggtitle("Germany: case recovery ratio estimate evolution ")
 
 ![](covid19_files/figure-markdown_strict/unnamed-chunk-5-2.png)
 
-    ggplot(gamma_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab(" case fatality ratio") + ggtitle(" case fatality ratio estimate evolution ")
+    ggplot(gamma_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab(" case fatality ratio") + ggtitle(" Germany: case fatality ratio estimate evolution ")
 
 ![](covid19_files/figure-markdown_strict/unnamed-chunk-5-3.png)
 
@@ -440,7 +429,7 @@ because *R*<sub>0</sub> changes with time.
     p <- ggplot(R0_predict, aes(cum_delta_recovered + cum_delta_deaths, cum_delta_recovered + cum_delta_deaths + cum_delta_inf))
     p <- p + geom_point()
     p <- p + geom_line(aes(cum_delta_deaths + cum_delta_recovered, R0_prediction))
-    p <- p + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + ggtitle("Fitted R0 line and  actual data")
+    p <- p + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + ggtitle("Germany: Fitted R0 line and  actual data")
     p
 
 ![](covid19_files/figure-markdown_strict/unnamed-chunk-6-1.png)
@@ -511,14 +500,14 @@ Once we have optimized, we can predict the case evolution as follows.
     predict <- fit$I + fit$D + fit$R
     plot(t, predict, col="green", xlab="Days since March 11", ylab="Confirmed cases")  
     lines(day, Confirmed, col="red")
-    title("Green is confirmed cases predicted by our model, red is actual data.")
+    title("Germany: Green is confirmed cases predicted by our model, red is actual data.")
 
 ![](covid19_files/figure-markdown_strict/unnamed-chunk-10-1.png)
 
 The results indicate that by the end of June, the confirmed cases will
 peak and the epidemic will end in Germany.
 
-#### 4.2 Results for India
+### 4.2 Results for India
 
 Now we repeat the same analysis for India. Note India is still in the
 early phase of the disease.
@@ -551,7 +540,8 @@ Once we have optimized, we can predict the case evolution as follows.
 The results indicate that the curve will peak in India by the end of
 July.
 
-### Conclusions and Future work
+5. Conclusions and Future work
+------------------------------
 
 In this study, we used SIRD model commonly used in epidemiology to
 estimate the evolution of basic reprducibility number, case fatality
@@ -567,18 +557,22 @@ estimates recently reported in
 line with the recent WHO estimates given [WHO envoy
 interview](https://www.ndtv.com/india-news/indias-covid-curve-likely-to-flatten-reach-peak-by-july-end-who-envoy-2225754).
 
-\#\#\#Limitations However, we must state here that there are several
-limitations to our predictions. First, the model itself is a simplistic
-model to study the disease as it assumes constant transmission rates
-among different classes. Also, the model does not take into account the
-asymptomatic cases which may be contributing to sopreading the disease.
-Secondly, the data itself might be unreliable as there might be severe
-underreporting of infected people because of lack of testing. Thirdly,
-the uplifting of lockdown may accelerate the spread of disease. A more
-complex model with these factors taken into account would be desirable
-for a better forecasting.
+6. Limitations
+--------------
 
-### References
+However, we must state here that there are several limitations to our
+predictions. First, the model itself is a simplistic model to study the
+disease as it assumes constant transmission rates among different
+classes. Also, the model does not take into account the asymptomatic
+cases which may be contributing to sopreading the disease. Secondly, the
+data itself might be unreliable as there might be severe underreporting
+of infected people because of lack of testing. Thirdly, the uplifting of
+lockdown may accelerate the spread of disease. A more complex model with
+these factors taken into account would be desirable for a better
+forecasting.
+
+7. References
+-------------
 
 \[1\] Cleo Anastassopoulou ,Lucia Russo,Athanasios Tsakris, Constantinos
 Siettos," Data-based analysis, modelling and forecasting of the COVID-19
