@@ -1,0 +1,769 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdftitle={COVID-19 data analysis and forecasting for India and Germany using SIRD model},
+            pdfauthor={Dhwanit},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\title{COVID-19 data analysis and forecasting for India and Germany using SIRD
+model}
+\author{Dhwanit}
+\date{5/10/2020}
+
+\begin{document}
+\maketitle
+
+\hypertarget{introduction}{%
+\subsubsection{1. Introduction}\label{introduction}}
+
+Coronaviruses are a family of human pathogens and have been responsible
+for a variety of respiratory diseases in humans ranging from common cold
+to dangerous ones like SARS (Severe Acute Respiratory) and MERS (Middle
+East Respiratory Syndrome). At the end of 2019, a novel strain of
+coronavirus was identified as a casue of pneumonia-type illness in
+Wuhan, Hubei in China. The virus was highly contagious and rapidly
+spread throughout the city. Though the Chinese government ordered
+lockdown of the city, the virus had spread to different parts of the
+world resulting in a global pandemic of a massive scale in February
+2020. The virus has been named as 2019-nCov and the disease has been
+termed as COVID-19 (Coronavirus disease 2019).
+
+The understanding of the virus is evolving and several models have been
+proposed to find the basic reproducibility number (denoted by
+\(R_{0}\)), case fatality rate and case recovery rate. In this study, we
+use epidemic transmission dynamics based compartmental model called
+\textbf{\emph{SIRD model}} to study the progression of the disease for
+different countries (in particular, Germany and India). We use the
+discrete approximations as in {[}1{]} to estimate the \(R_{0}\) , case
+mortality and case recovery rates and analyse the changes as time
+progresses. Furthermore, we fit the model to the epidemic curves of
+these countries to make forecasts about the peak of the epidemic and the
+flattening of the curve.
+
+\hypertarget{data-visualization-and-exploratory-analysis}{%
+\subsubsection{2. Data visualization and exploratory
+analysis}\label{data-visualization-and-exploratory-analysis}}
+
+The COVID-19 data used in this analysis is available on the public git
+repository
+\href{https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series}{COVID}.
+The data has the time series of confirmed, recovered and death cases of
+COVID-19 for various countries. The first five rows of confirmed cases
+database look like this:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{confirmed <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"data/time_series_covid19_confirmed_global.csv"}\NormalTok{)}
+
+\NormalTok{deaths <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"data/time_series_covid19_deaths_global.csv"}\NormalTok{)}
+
+\NormalTok{recovered <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"data/time_series_covid19_recovered_global.csv"}\NormalTok{)}
+
+\KeywordTok{head}\NormalTok{(confirmed, }\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Province.State Country.Region      Lat    Long X1.22.20 X1.23.20 X1.24.20
+## 1                   Afghanistan  33.0000 65.0000        0        0        0
+## 2                       Albania  41.1533 20.1683        0        0        0
+## 3                       Algeria  28.0339  1.6596        0        0        0
+## 4                       Andorra  42.5063  1.5218        0        0        0
+## 5                        Angola -11.2027 17.8739        0        0        0
+##   X1.25.20 X1.26.20 X1.27.20 X1.28.20 X1.29.20 X1.30.20 X1.31.20 X2.1.20
+## 1        0        0        0        0        0        0        0       0
+## 2        0        0        0        0        0        0        0       0
+## 3        0        0        0        0        0        0        0       0
+## 4        0        0        0        0        0        0        0       0
+## 5        0        0        0        0        0        0        0       0
+##   X2.2.20 X2.3.20 X2.4.20 X2.5.20 X2.6.20 X2.7.20 X2.8.20 X2.9.20 X2.10.20
+## 1       0       0       0       0       0       0       0       0        0
+## 2       0       0       0       0       0       0       0       0        0
+## 3       0       0       0       0       0       0       0       0        0
+## 4       0       0       0       0       0       0       0       0        0
+## 5       0       0       0       0       0       0       0       0        0
+##   X2.11.20 X2.12.20 X2.13.20 X2.14.20 X2.15.20 X2.16.20 X2.17.20 X2.18.20
+## 1        0        0        0        0        0        0        0        0
+## 2        0        0        0        0        0        0        0        0
+## 3        0        0        0        0        0        0        0        0
+## 4        0        0        0        0        0        0        0        0
+## 5        0        0        0        0        0        0        0        0
+##   X2.19.20 X2.20.20 X2.21.20 X2.22.20 X2.23.20 X2.24.20 X2.25.20 X2.26.20
+## 1        0        0        0        0        0        1        1        1
+## 2        0        0        0        0        0        0        0        0
+## 3        0        0        0        0        0        0        1        1
+## 4        0        0        0        0        0        0        0        0
+## 5        0        0        0        0        0        0        0        0
+##   X2.27.20 X2.28.20 X2.29.20 X3.1.20 X3.2.20 X3.3.20 X3.4.20 X3.5.20 X3.6.20
+## 1        1        1        1       1       1       1       1       1       1
+## 2        0        0        0       0       0       0       0       0       0
+## 3        1        1        1       1       3       5      12      12      17
+## 4        0        0        0       0       1       1       1       1       1
+## 5        0        0        0       0       0       0       0       0       0
+##   X3.7.20 X3.8.20 X3.9.20 X3.10.20 X3.11.20 X3.12.20 X3.13.20 X3.14.20 X3.15.20
+## 1       1       4       4        5        7        7        7       11       16
+## 2       0       0       2       10       12       23       33       38       42
+## 3      17      19      20       20       20       24       26       37       48
+## 4       1       1       1        1        1        1        1        1        1
+## 5       0       0       0        0        0        0        0        0        0
+##   X3.16.20 X3.17.20 X3.18.20 X3.19.20 X3.20.20 X3.21.20 X3.22.20 X3.23.20
+## 1       21       22       22       22       24       24       40       40
+## 2       51       55       59       64       70       76       89      104
+## 3       54       60       74       87       90      139      201      230
+## 4        2       39       39       53       75       88      113      133
+## 5        0        0        0        0        1        2        2        3
+##   X3.24.20 X3.25.20 X3.26.20 X3.27.20 X3.28.20 X3.29.20 X3.30.20 X3.31.20
+## 1       74       84       94      110      110      120      170      174
+## 2      123      146      174      186      197      212      223      243
+## 3      264      302      367      409      454      511      584      716
+## 4      164      188      224      267      308      334      370      376
+## 5        3        3        4        4        5        7        7        7
+##   X4.1.20 X4.2.20 X4.3.20 X4.4.20 X4.5.20 X4.6.20 X4.7.20 X4.8.20 X4.9.20
+## 1     237     273     281     299     349     367     423     444     484
+## 2     259     277     304     333     361     377     383     400     409
+## 3     847     986    1171    1251    1320    1423    1468    1572    1666
+## 4     390     428     439     466     501     525     545     564     583
+## 5       8       8       8      10      14      16      17      19      19
+##   X4.10.20 X4.11.20 X4.12.20 X4.13.20 X4.14.20 X4.15.20 X4.16.20 X4.17.20
+## 1      521      555      607      665      714      784      840      906
+## 2      416      433      446      467      475      494      518      539
+## 3     1761     1825     1914     1983     2070     2160     2268     2418
+## 4      601      601      638      646      659      673      673      696
+## 5       19       19       19       19       19       19       19       19
+##   X4.18.20 X4.19.20 X4.20.20 X4.21.20 X4.22.20 X4.23.20 X4.24.20 X4.25.20
+## 1      933      996     1026     1092     1176     1279     1351     1463
+## 2      548      562      584      609      634      663      678      712
+## 3     2534     2629     2718     2811     2910     3007     3127     3256
+## 4      704      713      717      717      723      723      731      738
+## 5       24       24       24       24       25       25       25       25
+##   X4.26.20 X4.27.20 X4.28.20 X4.29.20 X4.30.20 X5.1.20 X5.2.20 X5.3.20 X5.4.20
+## 1     1531     1703     1828     1939     2171    2335    2469    2704    2894
+## 2      726      736      750      766      773     782     789     795     803
+## 3     3382     3517     3649     3848     4006    4154    4295    4474    4648
+## 4      738      743      743      743      745     745     747     748     750
+## 5       26       27       27       27       27      30      35      35      35
+##   X5.5.20 X5.6.20 X5.7.20 X5.8.20 X5.9.20
+## 1    3224    3392    3563    3778    4033
+## 2     820     832     842     850     856
+## 3    4838    4997    5182    5369    5558
+## 4     751     751     752     752     754
+## 5      36      36      36      43      43
+\end{verbatim}
+
+We can see the data starts from January 22, 2020 and gives us the number
+of confirmed cases on each date since then till now.
+
+Below we plot the progression of the disease (confirmed, recovered,
+deaths) in a few selected countries.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{countries =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Italy"}\NormalTok{, }\StringTok{"Spain"}\NormalTok{, }\StringTok{"Germany"}\NormalTok{, }\StringTok{"India"}\NormalTok{, }\StringTok{"Sweden"}\NormalTok{, }\StringTok{"Singapore"}\NormalTok{, }\StringTok{"Iran"}\NormalTok{, }\StringTok{"Korea, South"}\NormalTok{)}
+
+\NormalTok{confirmed_countries =}\StringTok{ }\NormalTok{confirmed[confirmed}\OperatorTok{$}\NormalTok{Country.Region }\OperatorTok{%in%}\StringTok{ }\NormalTok{countries,]}
+\NormalTok{deaths_countries =}\StringTok{ }\NormalTok{deaths[deaths}\OperatorTok{$}\NormalTok{Country.Region }\OperatorTok{%in%}\StringTok{ }\NormalTok{countries,]}
+\NormalTok{recovered_countries =}\StringTok{ }\NormalTok{recovered[recovered}\OperatorTok{$}\NormalTok{Country.Region }\OperatorTok{%in%}\StringTok{ }\NormalTok{countries,]}
+
+
+
+\CommentTok{### EXTRACTING CONFIRMED DATA FOR COUNTRIES}
+\NormalTok{confirmed_countries_melt =}\StringTok{ }\KeywordTok{melt}\NormalTok{(confirmed_countries, }\DataTypeTok{id=}\KeywordTok{c}\NormalTok{(}\StringTok{"Province.State"}\NormalTok{, }\StringTok{"Country.Region"}\NormalTok{, }\StringTok{"Lat"}\NormalTok{, }\StringTok{"Long"}\NormalTok{), }\DataTypeTok{variable.name =} \StringTok{"Day"}\NormalTok{)}
+\NormalTok{confirmed_countries_melt =}\StringTok{ }\NormalTok{confirmed_countries_melt[}\KeywordTok{which}\NormalTok{(confirmed_countries_melt}\OperatorTok{$}\NormalTok{value }\OperatorTok{>}\StringTok{ }\DecValTok{-1}\NormalTok{),]}
+\NormalTok{confirmed_countries_melt}\OperatorTok{$}\NormalTok{days_since =}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{109}\NormalTok{, }\DataTypeTok{each=}\DecValTok{8}\NormalTok{)}
+\CommentTok{#View(confirmed_countries_melt)}
+\CommentTok{#Plotting the data}
+\KeywordTok{ggplot}\NormalTok{(confirmed_countries_melt, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{days_since, }\DataTypeTok{y=}\KeywordTok{log}\NormalTok{(value), }\DataTypeTok{group=}\NormalTok{Country.Region, }\DataTypeTok{color=}\NormalTok{Country.Region)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Days since Jan 22 "}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{"log(Confirmed cases)"}\NormalTok{)  }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Confirmed cases plot for different countries with days since Jan 22"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{covid19_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{###EXTRACTING RECOVERED DATA OF ITALY }
+\NormalTok{recovered_countries_melt =}\StringTok{ }\KeywordTok{melt}\NormalTok{(recovered_countries, }\DataTypeTok{id=}\KeywordTok{c}\NormalTok{(}\StringTok{"Province.State"}\NormalTok{, }\StringTok{"Country.Region"}\NormalTok{, }\StringTok{"Lat"}\NormalTok{, }\StringTok{"Long"}\NormalTok{), }\DataTypeTok{variable.name =} \StringTok{"Day"}\NormalTok{)}
+\NormalTok{recovered_countries_melt =}\StringTok{ }\NormalTok{recovered_countries_melt[}\KeywordTok{which}\NormalTok{(recovered_countries_melt}\OperatorTok{$}\NormalTok{value }\OperatorTok{>}\StringTok{ }\DecValTok{-1}\NormalTok{),]}
+\NormalTok{recovered_countries_melt}\OperatorTok{$}\NormalTok{days_since =}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{109}\NormalTok{, }\DataTypeTok{each=}\DecValTok{8}\NormalTok{)}
+\KeywordTok{ggplot}\NormalTok{(recovered_countries_melt, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{days_since, }\DataTypeTok{y=}\KeywordTok{log}\NormalTok{(value), }\DataTypeTok{group=}\NormalTok{Country.Region, }\DataTypeTok{color=}\NormalTok{Country.Region)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Days since Jan 22 "}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{"log(Recovered cases)"}\NormalTok{)  }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Recovered cases plot for different countries with days since Jan 22"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{covid19_files/figure-latex/unnamed-chunk-2-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{###EXTRACTING DEATHS DATA OF ITALY }
+\NormalTok{deaths_countries_melt =}\StringTok{ }\KeywordTok{melt}\NormalTok{(deaths_countries, }\DataTypeTok{id=}\KeywordTok{c}\NormalTok{(}\StringTok{"Province.State"}\NormalTok{, }\StringTok{"Country.Region"}\NormalTok{, }\StringTok{"Lat"}\NormalTok{, }\StringTok{"Long"}\NormalTok{), }\DataTypeTok{variable.name =} \StringTok{"Day"}\NormalTok{)}
+\NormalTok{deaths_countries_melt =}\StringTok{ }\NormalTok{deaths_countries_melt[}\KeywordTok{which}\NormalTok{(deaths_countries_melt}\OperatorTok{$}\NormalTok{value }\OperatorTok{>}\StringTok{ }\DecValTok{-1}\NormalTok{),]}
+\NormalTok{deaths_countries_melt}\OperatorTok{$}\NormalTok{days_since =}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{109}\NormalTok{, }\DataTypeTok{each=}\DecValTok{8}\NormalTok{)}
+\KeywordTok{ggplot}\NormalTok{(deaths_countries_melt, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{days_since, }\DataTypeTok{y=}\KeywordTok{log}\NormalTok{(value), }\DataTypeTok{group=}\NormalTok{Country.Region, }\DataTypeTok{color=}\NormalTok{Country.Region)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Days since Jan 22 "}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{"log(Deaths)"}\NormalTok{)  }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Deaths plot for different countries with days since Jan 22"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{covid19_files/figure-latex/unnamed-chunk-2-3.pdf}
+
+We can see from the plots that South Korea has successfully flattened
+the curve and countries like Germany and Italy have started flattening.
+On the other hand, India and Singapore are still far from flattening the
+curve.
+
+\hypertarget{formulation-of-sird-model}{%
+\subsubsection{3. Formulation of SIRD
+model}\label{formulation-of-sird-model}}
+
+In this section, we discuss the basics of the SIRD model to simulate
+epidemic progression with time.
+
+\hypertarget{discrete-model}{%
+\paragraph{3.1 Discrete model}\label{discrete-model}}
+
+Within this model of the evolution of an epidemic outbreak, people can
+be divided into different classes. In the susceptible (S), infected (I),
+recovered (R), dead (D) scheme (SIRD), any individual in the fraction of
+the overall population that will eventually get sick belongs to one of
+the aforementioned classes. Let N be the size of the initial population
+of susceptible people. The discrete SIRD model can be written as
+follows:
+
+\[
+S(t) - S(t-1) = -\frac{\alpha}{N} S(t-1)I(t-1), \\
+I(t) - I(t-1) = \frac{\alpha}{N} S(t-1)I(t-1) - \beta I(t-1) - \gamma I(t-1), \\
+R(t) - R(t-1) = \beta I(t-1), \\
+D(t) - D(t-1) = \gamma I(t-1) ,
+\]
+
+The basic reproduction number \(R_{0}\) is then defined as \[
+R_{0} := \frac{\alpha}{\beta + \gamma}. 
+\]
+
+Since the number of susceptible people is hard to determine and depends
+on the population, lockdown measures, social distancing etc, we take a
+different approach to estimate \(R_{0}\) as mentioned in Ref \(1\). Let
+us denote \$\Delta X(t) := X(t) - X(t-1) \$ for \(X=I, R, D\). Now we
+define, \[
+C\Delta X(T) := \sum_{t=1}^{T} \Delta X(t) \textit{,     and  }\\ 
+\mathbf{C \Delta X} (T) := [C\Delta X(1), C\Delta X(2), ..., C\Delta X(T)]^{T} . 
+\]
+
+Here C stands for cumulative. Using the approximation
+\(S(t-1) \approx N\) (true if susceptible population is much less than
+the population of the country), we can get \[ 
+R_{0} = \frac{\alpha}{\beta + \gamma} = \frac{I(t) - I(t-1) + R(t) - R(t-1) + D(t) - D(t-1)}{R(t) - R(t-1) + D(t) - D(t-1)}.
+\] Summing this equation over time we get, \[
+\frac{C\Delta I(t) +C\Delta R(t) + C\Delta D(t) }{C\Delta R(t) + C \Delta D(t)} = R_{0}.
+\] Based on this, we can get a coarse estimate for \(R_{0}\) by finding
+a least squares solution to the following regression problem:\\
+\[
+[\mathbf{C\Delta I(t) +C\Delta R(t) + C\Delta D(t)}] = [\mathbf{C\Delta R(t) + C \Delta D(t)}] R_{0}, 
+\] with solution given by \[
+\hat{R}_{0} = ([\mathbf{C\Delta R(t) + C \Delta D(t)}]^{T}[\mathbf{C\Delta R(t) + C \Delta D(t)}])^{-1} [\mathbf{C\Delta R(t) + C \Delta D(t)}]^{T}  [\mathbf{C\Delta I(t) +C\Delta R(t) + C\Delta D(t)}].
+\] Similarly, the case fatality rate (\(\hat{\beta}\)) and case recovery
+rate (\(\hat{\gamma}\)) can be estimated as: \[
+ \hat{\beta} = ([\mathbf{C\Delta I(t) }]^{T}[\mathbf{C\Delta I(t) }])^{-1} [\mathbf{C\Delta I(t)}]^{T}  [\mathbf{C\Delta R(t) }], \\
+ \hat{\gamma} = ([\mathbf{C\Delta I(t) }]^{T}[\mathbf{C\Delta I(t)}])^{-1} [\mathbf{C\Delta I(t) }]^{T}  [\mathbf{ C\Delta D(t)}].
+ \]
+
+\hypertarget{continuous-model}{%
+\paragraph{3.2. Continuous model}\label{continuous-model}}
+
+In the continuous, the number of people in each class is a function of
+conitnuous time. So S(t) denotes the susceptible people at a time t. The
+mean-field kinetics of the SIRD epidemic evolution is described by the
+following system of differential equations:
+
+\[
+\frac{dS}{dt} = -\frac{\alpha}{N} S(t)I(t), \\
+\frac{dI}{dt} = \frac{\alpha}{N} S(t)I(t) - \beta I(t) - \gamma I(t), \\
+\frac{dR}{dt} = \beta I(t), \\
+\frac{dD}{dt} = \gamma I(t) ,
+\]
+
+with initial condition \([S(t_{0}),I(t_{0}),R(t_{0}),D(t_{0})]\) for
+some initial time \(t_{0}\). The parameter \(\alpha\) is the infection
+rate, i.e.~the probability per unit time that a susceptible individual
+contracts the disease when entering in contact with an infected person.
+The parameters \(\beta\) and \(\gamma\) denote, respectively, the
+recovery and death rates. This scheme has good chances to capture at
+least the gross features of the full time course of the outbreak.
+
+\includegraphics{SIRD.png}\{Above figures shows SIRD model classes and
+change per unit time shown above arrows.\}
+
+\hypertarget{results}{%
+\subsubsection{4 Results}\label{results}}
+
+In this section we present our results for basic reproduction number,
+case fatality rate, case recovery ratios and time series forecasting for
+Germany and India.
+
+\hypertarget{results-for-germany}{%
+\paragraph{4.1 Results for Germany}\label{results-for-germany}}
+
+We first use the discrete model to find these parameters and predict
+time series for Germany. We use the time series data available and for
+the required vectors \(\mathbf{C\Delta X}(T)\) for \(X=I, R, D\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{country =}\StringTok{ "Germany"} \CommentTok{#Country chosen}
+
+\CommentTok{#Extract country data from countries data}
+\NormalTok{italy_cnf_melt =}\StringTok{ }\NormalTok{confirmed_countries_melt[}\KeywordTok{which}\NormalTok{(confirmed_countries_melt}\OperatorTok{$}\NormalTok{Country.Region }\OperatorTok{==}\StringTok{ }\NormalTok{country), ]}
+
+\CommentTok{#Extract confirmed number  as a vector}
+\NormalTok{italy_cnf =}\StringTok{ }\NormalTok{italy_cnf_melt}\OperatorTok{$}\NormalTok{value}
+
+
+\CommentTok{#Extract delta infected vector delta_cnf(t) = I(t) - I(t-1)}
+\NormalTok{italy_delta_cnf =}\StringTok{ }\KeywordTok{diff}\NormalTok{(italy_cnf)}
+
+
+\CommentTok{#Cumulative sum of delta_cnf}
+\NormalTok{italy_cum_delta_cnf =}\StringTok{ }\KeywordTok{cumsum}\NormalTok{(italy_delta_cnf)}
+
+
+
+\NormalTok{italy_deaths_melt =}\StringTok{ }\NormalTok{deaths_countries_melt[}\KeywordTok{which}\NormalTok{(deaths_countries_melt}\OperatorTok{$}\NormalTok{Country.Region }\OperatorTok{==}\StringTok{ }\NormalTok{country), ]}
+
+\CommentTok{#Extract deaths number as a vector}
+\NormalTok{italy_deaths =}\StringTok{ }\NormalTok{italy_deaths_melt}\OperatorTok{$}\NormalTok{value}
+
+
+\CommentTok{#Extract delta deathsvector delta_deaths(t) = D(t) - D(t-1)}
+\NormalTok{italy_delta_deaths =}\StringTok{ }\KeywordTok{diff}\NormalTok{(italy_deaths)}
+
+
+\CommentTok{#Cumulative sum of delta_deaths}
+\NormalTok{italy_cum_delta_deaths =}\StringTok{ }\KeywordTok{cumsum}\NormalTok{(italy_delta_deaths)}
+
+
+\CommentTok{#Extract Italy data from countries recovered data}
+\NormalTok{italy_recovered_melt =}\StringTok{ }\NormalTok{recovered_countries_melt[}\KeywordTok{which}\NormalTok{(recovered_countries_melt}\OperatorTok{$}\NormalTok{Country.Region }\OperatorTok{==}\StringTok{ }\NormalTok{country), ]}
+
+\CommentTok{#Extract recovered number as a vector}
+\NormalTok{italy_recovered =}\StringTok{ }\NormalTok{italy_recovered_melt}\OperatorTok{$}\NormalTok{value}
+
+
+\CommentTok{#Extract delta recovered vector delta_recovered(t) = R(t) - R(t-1)}
+\NormalTok{italy_delta_recovered =}\StringTok{ }\KeywordTok{diff}\NormalTok{(italy_recovered)}
+
+
+\CommentTok{#Cumulative sum of delta_recovered}
+\NormalTok{italy_cum_delta_recovered =}\StringTok{ }\KeywordTok{cumsum}\NormalTok{(italy_delta_recovered)}
+
+\CommentTok{### Caluclating infected numbers from confirmed cases}
+\CommentTok{#Extract infected number cases as a vector}
+\NormalTok{italy_inf =}\StringTok{ }\NormalTok{italy_cnf }\OperatorTok{-}\StringTok{ }\NormalTok{italy_recovered }\OperatorTok{-}\StringTok{ }\NormalTok{italy_deaths}
+
+
+
+\CommentTok{#Extract delta infected vector delta_inf(t) = I(t) - I(t-1)}
+\NormalTok{italy_delta_inf =}\StringTok{ }\KeywordTok{diff}\NormalTok{(italy_inf)}
+
+
+\CommentTok{#Cumulative sum of delta_inf}
+\NormalTok{italy_cum_delta_inf =}\StringTok{ }\KeywordTok{cumsum}\NormalTok{(italy_delta_inf)}
+\end{Highlighting}
+\end{Shaded}
+
+We then use different time windows to estimate the time evolution of
+these parameters.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{###ESTIMATING CASE FATALITY RATIO}
+
+\CommentTok{#Making data frame of cumulative data}
+\NormalTok{italy_cum_data_full =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{delta_inf=}\NormalTok{ italy_delta_inf, }\DataTypeTok{cum_delta_inf=}\NormalTok{italy_cum_delta_inf, }\DataTypeTok{delta_recovered =}\NormalTok{ italy_delta_recovered, }\DataTypeTok{cum_delta_recovered=}\NormalTok{ italy_cum_delta_recovered, }\DataTypeTok{delta_deaths =}\NormalTok{ italy_delta_deaths, }\DataTypeTok{cum_delta_deaths=}\NormalTok{italy_cum_delta_deaths)}
+
+
+\CommentTok{##VARY THE NUMBER OF DAYS CHOSEN FOR ANALYSIS}
+\NormalTok{ndays =}\StringTok{ }\DecValTok{65}\OperatorTok{:}\DecValTok{97}
+\NormalTok{gamma_data <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\DataTypeTok{ncol =} \DecValTok{3}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{0}\NormalTok{))}
+\NormalTok{x <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"est"}\NormalTok{, }\StringTok{"lwr"}\NormalTok{, }\StringTok{"upr"}\NormalTok{)}
+\KeywordTok{colnames}\NormalTok{(gamma_data) <-}\StringTok{ }\NormalTok{x}
+
+\NormalTok{beta_data <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\DataTypeTok{ncol =} \DecValTok{3}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{0}\NormalTok{))}
+\NormalTok{x <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"est"}\NormalTok{, }\StringTok{"lwr"}\NormalTok{, }\StringTok{"upr"}\NormalTok{)}
+\KeywordTok{colnames}\NormalTok{(beta_data) <-}\StringTok{ }\NormalTok{x}
+
+\NormalTok{R0_data <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\DataTypeTok{ncol =} \DecValTok{3}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{0}\NormalTok{))}
+\NormalTok{x <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"est"}\NormalTok{, }\StringTok{"lwr"}\NormalTok{, }\StringTok{"upr"}\NormalTok{)}
+\KeywordTok{colnames}\NormalTok{(R0_data) <-}\StringTok{ }\NormalTok{x}
+
+\CommentTok{#loop over days window chosen}
+\ControlFlowTok{for}\NormalTok{ (days }\ControlFlowTok{in}\NormalTok{ ndays) \{}
+  
+\NormalTok{italy_cum_data =}\StringTok{ }\NormalTok{italy_cum_data_full[}\DecValTok{1}\OperatorTok{:}\NormalTok{days, ]}
+\CommentTok{#View(italy_cum_data)}
+
+
+\CommentTok{#fitting a linear model for case fatality ratio}
+\NormalTok{italy_gamma <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(cum_delta_deaths }\OperatorTok{~}\StringTok{ }\NormalTok{cum_delta_inf  }\DecValTok{-1}\NormalTok{  , }\DataTypeTok{data=}\NormalTok{italy_cum_data)  }\CommentTok{# build linear regression model on full data}
+
+
+\CommentTok{###ESTIMATING CASE  RECOVERY RATIO}
+\KeywordTok{cor}\NormalTok{(italy_cum_delta_inf, italy_cum_delta_recovered)}
+\CommentTok{#high correlation }
+\CommentTok{#fitting a linear model for case recovery ratio}
+\NormalTok{italy_beta <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(cum_delta_recovered }\OperatorTok{~}\StringTok{ }\NormalTok{cum_delta_inf }\DecValTok{-1}\NormalTok{ , }\DataTypeTok{data=}\NormalTok{italy_cum_data)  }\CommentTok{# build linear regression model on full data with no intercept}
+
+\CommentTok{###ESTIMATING R0}
+\CommentTok{#fitting a linear model for case basic reproducibility number R0}
+\NormalTok{italy_R0 <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(cum_delta_deaths }\OperatorTok{+}\StringTok{ }\NormalTok{cum_delta_recovered }\OperatorTok{+}\StringTok{ }\NormalTok{cum_delta_inf  }\OperatorTok{~}\StringTok{ }\KeywordTok{I}\NormalTok{(cum_delta_recovered }\OperatorTok{+}\StringTok{ }\NormalTok{cum_delta_deaths) }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{  , }\DataTypeTok{data=}\NormalTok{italy_cum_data)  }\CommentTok{# build linear regression model on full data}
+
+
+\CommentTok{##Storing estimations and conf intervals}
+
+\NormalTok{conf =}\StringTok{ }\KeywordTok{confint}\NormalTok{(italy_gamma)}
+\NormalTok{gamma_row <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{est =} \KeywordTok{summary}\NormalTok{(italy_gamma)}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{1}\NormalTok{], }\DataTypeTok{lwr =}\NormalTok{ conf[}\DecValTok{1}\NormalTok{], }\DataTypeTok{upr =}\NormalTok{ conf[}\DecValTok{2}\NormalTok{])}
+
+
+\NormalTok{gamma_data =}\StringTok{ }\KeywordTok{rbind}\NormalTok{(gamma_data, gamma_row)}
+
+
+\NormalTok{conf =}\StringTok{ }\KeywordTok{confint}\NormalTok{(italy_beta)}
+\NormalTok{beta_row <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{est =} \KeywordTok{summary}\NormalTok{(italy_beta)}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{1}\NormalTok{], }\DataTypeTok{lwr =}\NormalTok{ conf[}\DecValTok{1}\NormalTok{], }\DataTypeTok{upr =}\NormalTok{ conf[}\DecValTok{2}\NormalTok{])}
+
+
+\NormalTok{beta_data =}\StringTok{ }\KeywordTok{rbind}\NormalTok{(beta_data, beta_row)}
+
+
+\NormalTok{conf =}\StringTok{ }\KeywordTok{confint}\NormalTok{(italy_R0)}
+\NormalTok{R0_row <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{est =} \KeywordTok{summary}\NormalTok{(italy_R0)}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{1}\NormalTok{], }\DataTypeTok{lwr =}\NormalTok{ conf[}\DecValTok{1}\NormalTok{], }\DataTypeTok{upr =}\NormalTok{ conf[}\DecValTok{2}\NormalTok{])}
+
+
+\NormalTok{R0_data =}\StringTok{ }\KeywordTok{rbind}\NormalTok{(R0_data, R0_row)}
+
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+We plot plot the estimates and the corresponding 99\% confidence
+intervals for \(R_{0}, \hat{\beta}, \hat{\gamma}\) as below.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(R0_data, }\KeywordTok{aes}\NormalTok{(ndays, est)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(ndays, est)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_ribbon}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{ymin=}\NormalTok{lwr,}\DataTypeTok{ymax=}\NormalTok{upr), }\DataTypeTok{alpha=}\FloatTok{0.5}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Number of days since Jan 22"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{"R0"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"R0 estimate evolution "}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{covid19_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(beta_data, }\KeywordTok{aes}\NormalTok{(ndays, est)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(ndays, est)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_ribbon}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{ymin=}\NormalTok{lwr,}\DataTypeTok{ymax=}\NormalTok{upr), }\DataTypeTok{alpha=}\FloatTok{0.5}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Number of days since Jan 22"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{"case recovery ratio"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"case recovery ratio estimate evolution "}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{covid19_files/figure-latex/unnamed-chunk-5-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(gamma_data, }\KeywordTok{aes}\NormalTok{(ndays, est)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(ndays, est)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_ribbon}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{ymin=}\NormalTok{lwr,}\DataTypeTok{ymax=}\NormalTok{upr), }\DataTypeTok{alpha=}\FloatTok{0.5}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Number of days since Jan 22"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{" case fatality ratio"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{" case fatality ratio estimate evolution "}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{covid19_files/figure-latex/unnamed-chunk-5-3.pdf}
+
+From these, we can see that the \(R_{0}\) for Germany has come down from
+8.2 to 1.6 (99\% CI : {[}1.5 1.7{]}). This is good news and indicates
+flattening of the curve. Note that if \(R_{0} < 1\), the disease stops
+spreading. The case recovery ratio is going up and has reached
+approximately 0.9 while the case fatality ratio is about 0.049. We note
+here that since the estimate for case recovery and fatality only
+includes infected cases, hence the estimates for \(\hat{\beta}\) and
+\(\hat{\gamma}\) are only relibale for the early stages of the epidemic.
+
+Since \(R_{0}\) is estimated by a linear model, for curiosity we carry
+out some diagnostics to see how if the data actually fits to the linear
+plot. We the plot out fitted slope (which is equal to \(R_{0}\)) and
+observe that a rather poor fit which is expected because \(R_{0}\)
+changes with time.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{##Predicted R0 using model}
+\CommentTok{# add 'fit', 'lwr', and 'upr' columns to dataframe (generated by predict)}
+\NormalTok{R0_predict <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(italy_cum_data, }\KeywordTok{predict}\NormalTok{(italy_R0, }\DataTypeTok{interval =} \StringTok{'confidence'}\NormalTok{))}
+\NormalTok{R0_prediction =}\StringTok{ }\KeywordTok{predict}\NormalTok{(italy_R0)}
+\CommentTok{# plot the points (actual observations), regression line, and confidence interval}
+\NormalTok{p <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(R0_predict, }\KeywordTok{aes}\NormalTok{(cum_delta_recovered }\OperatorTok{+}\StringTok{ }\NormalTok{cum_delta_deaths, cum_delta_recovered }\OperatorTok{+}\StringTok{ }\NormalTok{cum_delta_deaths }\OperatorTok{+}\StringTok{ }\NormalTok{cum_delta_inf))}
+\NormalTok{p <-}\StringTok{ }\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{()}
+\NormalTok{p <-}\StringTok{ }\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(cum_delta_deaths }\OperatorTok{+}\StringTok{ }\NormalTok{cum_delta_recovered, R0_prediction))}
+\NormalTok{p <-}\StringTok{ }\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_ribbon}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{ymin=}\NormalTok{lwr,}\DataTypeTok{ymax=}\NormalTok{upr), }\DataTypeTok{alpha=}\FloatTok{0.5}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Fitted R0 line and  actual data"}\NormalTok{)}
+\NormalTok{p}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{covid19_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+Now, we solve the actualy differential equation to fit the evolution of
+the disease and forecast the time series. We intialize the values below.
+We ignore the initial data because of noisiness and low scale testing.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(deSolve)}
+\KeywordTok{library}\NormalTok{(RColorBrewer)}
+
+\NormalTok{Infected <-}\StringTok{ }\NormalTok{italy_inf[}\DecValTok{50}\OperatorTok{:}\DecValTok{97}\NormalTok{]}
+\NormalTok{Recovered <-}\StringTok{ }\NormalTok{italy_recovered[}\DecValTok{50}\OperatorTok{:}\DecValTok{97}\NormalTok{]}
+\NormalTok{Deaths <-}\StringTok{ }\NormalTok{italy_deaths[}\DecValTok{50}\OperatorTok{:}\DecValTok{97}\NormalTok{]}
+\NormalTok{Confirmed <-}\StringTok{ }\NormalTok{italy_cnf[}\DecValTok{50}\OperatorTok{:}\DecValTok{97}\NormalTok{]}
+\NormalTok{day <-}\StringTok{ }\DecValTok{0}\OperatorTok{:}\NormalTok{(}\KeywordTok{length}\NormalTok{(Infected)}\OperatorTok{-}\DecValTok{1}\NormalTok{)}
+\NormalTok{N <-}\StringTok{ }\DecValTok{830000} 
+
+
+\CommentTok{###edit 1: use different boundary condition}
+\CommentTok{###init <- c(S = N-1, I = 1, R = 0)}
+\NormalTok{init <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DataTypeTok{S =}\NormalTok{ N}\OperatorTok{-}\NormalTok{Infected[}\DecValTok{1}\NormalTok{] }\OperatorTok{-}\StringTok{ }\NormalTok{Recovered[}\DecValTok{1}\NormalTok{] }\OperatorTok{-}\StringTok{ }\NormalTok{Deaths[}\DecValTok{1}\NormalTok{], }\DataTypeTok{I =}\NormalTok{ Infected[}\DecValTok{1}\NormalTok{], }\DataTypeTok{R =}\NormalTok{ Recovered[}\DecValTok{1}\NormalTok{], }\DataTypeTok{D =}\NormalTok{ Deaths[}\DecValTok{1}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+Then, we define the differential changes in the quantities with respect
+to time.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{SIR <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(time, state, parameters) \{}
+\NormalTok{  par <-}\StringTok{ }\KeywordTok{as.list}\NormalTok{(}\KeywordTok{c}\NormalTok{(state, parameters))}
+  \CommentTok{####edit 2; use equally scaled variables }
+  \KeywordTok{with}\NormalTok{(par, \{ dS <-}\StringTok{ }\OperatorTok{-}\NormalTok{alpha }\OperatorTok{*}\StringTok{ }\NormalTok{(S}\OperatorTok{/}\NormalTok{N) }\OperatorTok{*}\StringTok{ }\NormalTok{I}
+\NormalTok{  dI <-}\StringTok{ }\NormalTok{alpha }\OperatorTok{*}\StringTok{ }\NormalTok{(S}\OperatorTok{/}\NormalTok{N) }\OperatorTok{*}\StringTok{ }\NormalTok{I }\OperatorTok{-}\StringTok{ }\NormalTok{beta }\OperatorTok{*}\StringTok{ }\NormalTok{I }\OperatorTok{-}\StringTok{ }\NormalTok{gamma }\OperatorTok{*}\StringTok{ }\NormalTok{I}
+\NormalTok{  dR <-}\StringTok{ }\NormalTok{beta }\OperatorTok{*}\StringTok{ }\NormalTok{I}
+\NormalTok{  dD <-}\StringTok{ }\NormalTok{gamma }\OperatorTok{*}\StringTok{ }\NormalTok{I}
+  \KeywordTok{list}\NormalTok{(}\KeywordTok{c}\NormalTok{(dS, dI, dR, dD))}
+\NormalTok{  \})}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Then we define an optimizer to find the optimum parameters to fit the
+confirmed cases curve with an initial guess. For this we also define a
+misfit function which is a simple L2 error function. The code is given
+below.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{RSS.SIR <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(parameters) \{}
+  \KeywordTok{names}\NormalTok{(parameters) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"alpha"}\NormalTok{, }\StringTok{"beta"}\NormalTok{, }\StringTok{"gamma"}\NormalTok{)}
+\NormalTok{  out <-}\StringTok{ }\KeywordTok{ode}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ init, }\DataTypeTok{times =}\NormalTok{ day, }\DataTypeTok{func =}\NormalTok{ SIR, }\DataTypeTok{parms =}\NormalTok{ parameters)}
+\NormalTok{  fit <-}\StringTok{ }\NormalTok{out[ , }\DecValTok{3}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{out[ , }\DecValTok{4}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{out[ , }\DecValTok{5}\NormalTok{]}
+\NormalTok{  RSS <-}\StringTok{ }\KeywordTok{sum}\NormalTok{((Confirmed}\OperatorTok{-}\StringTok{ }\NormalTok{fit)}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+  \KeywordTok{return}\NormalTok{(RSS)}
+\NormalTok{\}}
+
+\NormalTok{lower =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+\NormalTok{upper =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)  }\CommentTok{###Limit box for parameters for L-BFGS-B}
+
+
+\NormalTok{optimsstart <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\FloatTok{0.7}\NormalTok{, }\FloatTok{0.4}\NormalTok{,  }\FloatTok{0.2}\NormalTok{) }\CommentTok{#initial guess for parameters}
+
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{12}\NormalTok{)}
+\NormalTok{Opt <-}\StringTok{ }\KeywordTok{optim}\NormalTok{(optimsstart, RSS.SIR, }\DataTypeTok{method =} \StringTok{"L-BFGS-B"}\NormalTok{, }\DataTypeTok{lower =}\NormalTok{ lower, }\DataTypeTok{upper =}\NormalTok{ upper,}
+             \DataTypeTok{hessian =} \OtherTok{TRUE}\NormalTok{)}
+\CommentTok{#Opt$par}
+\end{Highlighting}
+\end{Shaded}
+
+Once we have optimized, we can predict the case evolution as follows.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Opt_par <-}\StringTok{ }\NormalTok{Opt}\OperatorTok{$}\NormalTok{par}
+\KeywordTok{names}\NormalTok{(Opt_par) =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"alpha"}\NormalTok{, }\StringTok{"beta"}\NormalTok{, }\StringTok{"gamma"}\NormalTok{)}
+\NormalTok{t <-}\StringTok{ }\DecValTok{0}\OperatorTok{:}\DecValTok{120}
+\NormalTok{fit <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{ode}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ init, }\DataTypeTok{times =}\NormalTok{ t, }\DataTypeTok{func =}\NormalTok{ SIR, }\DataTypeTok{parms =}\NormalTok{ Opt_par))}
+\NormalTok{predict <-}\StringTok{ }\NormalTok{fit}\OperatorTok{$}\NormalTok{I }\OperatorTok{+}\StringTok{ }\NormalTok{fit}\OperatorTok{$}\NormalTok{D }\OperatorTok{+}\StringTok{ }\NormalTok{fit}\OperatorTok{$}\NormalTok{R}
+\KeywordTok{plot}\NormalTok{(t, predict, }\DataTypeTok{col=}\StringTok{"green"}\NormalTok{, }\DataTypeTok{xlab=}\StringTok{"Days since March 11"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Confirmed cases"}\NormalTok{)  }
+\KeywordTok{lines}\NormalTok{(day, Confirmed, }\DataTypeTok{col=}\StringTok{"red"}\NormalTok{)}
+\KeywordTok{title}\NormalTok{(}\StringTok{"Green is confirmed cases predicted by our model, red is actual data."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{covid19_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+The results indicate that by the end of June, the confirmed cases will
+peak and the epidemic will end in Germany.
+
+\hypertarget{results-for-india}{%
+\paragraph{4.2 Results for India}\label{results-for-india}}
+
+Now we repeat the same analysis for India. Note India is still in the
+early phase of the disease.
+
+We plot plot the estimates and the corresponding 99\% confidence
+intervals for \(R_{0}, \hat{\beta}, \hat{\gamma}\) as below.
+
+\includegraphics{covid19_files/figure-latex/unnamed-chunk-13-1.pdf}
+\includegraphics{covid19_files/figure-latex/unnamed-chunk-13-2.pdf}
+\includegraphics{covid19_files/figure-latex/unnamed-chunk-13-3.pdf}
+
+From these, we can see that the \(R_{0}\) for India has come down from
+10.6 to 4.09 (99\% CI : {[}3.94 4.25{]}). Thus India is quite far away
+from the end of the epidemic. Note that if \(R_{0} < 1\), the disease
+stops spreading. The case recovery ratio is going up and has reached
+approximately 0.26 while the case fatality ratio is about 0.041.
+
+Since \(R_{0}\) is estimated by a linear model, for curiosity we carry
+out some diagnostics to see how if the data actually fits to the linear
+plot. We the plot out fitted slope (which is equal to \(R_{0}\)) and
+observe that a rather poor fit which is expected because \(R_{0}\)
+changes with time.
+
+\includegraphics{covid19_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+We solve the differntial equations system and fit the parameters to do
+time series forecasting for the India data.
+
+Once we have optimized, we can predict the case evolution as follows.\\
+\includegraphics{covid19_files/figure-latex/unnamed-chunk-18-1.pdf}
+
+The results indicate that the curve will peak in India by the end of
+July.
+
+\hypertarget{conclusions-and-future-work}{%
+\subsubsection{Conclusions and Future
+work}\label{conclusions-and-future-work}}
+
+In this study, we used SIRD model commonly used in epidemiology to
+estimate the evolution of basic reprducibility number, case fatality
+ratio and case recovery ratio as the disease progresses. We also use it
+to fit the parameters to the data coming from Germany and India and use
+it to predict the evolution of disease. Our results indicate that the
+epidemic should end in germany by the end of June. India might have to
+wait till the end of July before the peak is reached. The recovery
+ratios obtained for India (about 26\%) are consistent with the
+government estimates recently reported in
+\href{https://www.business-standard.com/article/current-affairs/covid-19-factoid-india-s-recovery-rate-improves-to-30-from-10-in-april-120050900106_1.html}{business-standard}
+. The prediction of beginning of curve flattening by July end are in
+line with the recent WHO estimates given
+\href{https://www.ndtv.com/india-news/indias-covid-curve-likely-to-flatten-reach-peak-by-july-end-who-envoy-2225754}{WHO
+envoy interview}.
+
+\#\#\#Limitations However, we must state here that there are several
+limitations to our predictions. First, the model itself is a simplistic
+model to study the disease as it assumes constant transmission rates
+among different classes. Also, the model does not take into account the
+asymptomatic cases which may be contributing to sopreading the disease.
+Secondly, the data itself might be unreliable as there might be severe
+underreporting of infected people because of lack of testing. Thirdly,
+the uplifting of lockdown may accelerate the spread of disease. A more
+complex model with these factors taken into account would be desirable
+for a better forecasting.
+
+\hypertarget{references}{%
+\subsubsection{References}\label{references}}
+
+{[}1{]} Cleo Anastassopoulou ,Lucia Russo,Athanasios Tsakris,
+Constantinos Siettos," Data-based analysis, modelling and forecasting of
+the COVID-19 outbreak", PLOS ONE (2020)
+(\url{https://doi.org/10.1371/journal.pone.0230405})
+
+\end{document}

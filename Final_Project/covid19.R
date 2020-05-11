@@ -4,6 +4,8 @@ library(LICORS)
 library(caret)
 library(reshape2)
 library(olsrr)
+
+
 confirmed <- read.csv("../COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
 
 deaths <- read.csv("../COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
@@ -40,7 +42,6 @@ italy_cnf_melt = confirmed_countries_melt[which(confirmed_countries_melt$Country
 
 #Extract infected number cases as a vector
 italy_cnf = italy_cnf_melt$value
-
 italy_cnf
 
 #Extract delta infected vector delta_inf(t) = I(t) - I(t-1)
@@ -131,7 +132,7 @@ italy_cum_data_full = data.frame(delta_inf= italy_delta_inf, cum_delta_inf=italy
 
 
 ##VARY THE NUMBER OF DAYS CHOSEN FOR ANALYSIS
-ndays = 40:97
+ndays = 65:97
 ndays
 gamma_data <- data.frame(matrix(ncol = 3, nrow = 0))
 x <- c("est", "lwr", "upr")
@@ -197,9 +198,9 @@ ggplot(beta_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est))
 
 ggplot(R0_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est))
 
-#View(R0_data)
-#View(beta_data)
-#View(gamma_data)
+View(R0_data)
+View(beta_data)
+View(gamma_data)
 
 ###PRINTING model and diagnostic test for gamma = case mortality rate
 print(italy_gamma)
