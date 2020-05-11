@@ -2,7 +2,7 @@
 title: "COVID-19 data analysis and forecasting for India and Germany using SIRD model"
 author: "Dhwanit, Shristi, Akksay and Bao"
 date: "5/10/2020"
-output: html_document
+output: pdf_document
 ---
 ## 1. Introduction
 Coronaviruses are a family of human pathogens and have been responsible for a variety of respiratory diseases in humans ranging from common cold to dangerous ones like SARS (Severe Acute Respiratory) 
@@ -54,33 +54,39 @@ recovered_countries = recovered[recovered$Country.Region %in% countries,]
 
 
 ### EXTRACTING CONFIRMED DATA FOR COUNTRIES
-confirmed_countries_melt = melt(confirmed_countries, id=c("Province.State", "Country.Region", "Lat", "Long"), variable.name = "Day")
+confirmed_countries_melt = melt(confirmed_countries, id=c("Province.State", "Country.Region", "Lat", "Long"), 
+  variable.name = "Day")
 confirmed_countries_melt = confirmed_countries_melt[which(confirmed_countries_melt$value > -1),]
 confirmed_countries_melt$days_since = rep(1:109, each=8)
 #View(confirmed_countries_melt)
 #Plotting the data
 ggplot(confirmed_countries_melt, aes(x=days_since, y=log(value), group=Country.Region, color=Country.Region)) +
   geom_point() +
-  geom_line() + xlab("Days since Jan 22 ") + ylab("log(Confirmed cases)")  + ggtitle("Confirmed cases plot for different countries with days since Jan 22") 
+  geom_line() + xlab("Days since Jan 22 ") + ylab("log(Confirmed cases)")  + 
+  ggtitle("Confirmed cases plot for different countries with days since Jan 22") 
 
 
 
 ###EXTRACTING RECOVERED DATA OF GERMANY
-recovered_countries_melt = melt(recovered_countries, id=c("Province.State", "Country.Region", "Lat", "Long"), variable.name = "Day")
+recovered_countries_melt = melt(recovered_countries, id=c("Province.State", "Country.Region", "Lat", "Long"), 
+  variable.name = "Day")
 recovered_countries_melt = recovered_countries_melt[which(recovered_countries_melt$value > -1),]
 recovered_countries_melt$days_since = rep(1:109, each=8)
 ggplot(recovered_countries_melt, aes(x=days_since, y=log(value), group=Country.Region, color=Country.Region)) +
   geom_point() +
-  geom_line() + xlab("Days since Jan 22 ") + ylab("log(Recovered cases)")  + ggtitle("Recovered cases plot for different countries with days since Jan 22") 
+  geom_line() + xlab("Days since Jan 22 ") + ylab("log(Recovered cases)")  + 
+  ggtitle("Recovered cases plot for different countries with days since Jan 22") 
 
 
 ###EXTRACTING DEATHS DATA OF GERMANY
-deaths_countries_melt = melt(deaths_countries, id=c("Province.State", "Country.Region", "Lat", "Long"), variable.name = "Day")
+deaths_countries_melt = melt(deaths_countries, id=c("Province.State", "Country.Region", "Lat", "Long"), 
+  variable.name = "Day")
 deaths_countries_melt = deaths_countries_melt[which(deaths_countries_melt$value > -1),]
 deaths_countries_melt$days_since = rep(1:109, each=8)
 ggplot(deaths_countries_melt, aes(x=days_since, y=log(value), group=Country.Region, color=Country.Region)) +
   geom_point() +
-  geom_line() + xlab("Days since Jan 22 ") + ylab("log(Deaths)")  + ggtitle("Deaths plot for different countries with days since Jan 22") 
+  geom_line() + xlab("Days since Jan 22 ") + ylab("log(Deaths)")  + 
+  ggtitle("Deaths plot for different countries with days since Jan 22") 
 
 
 ```
@@ -110,7 +116,8 @@ R_{0} := \frac{\alpha}{\beta + \gamma}.
 \end{aligned}
 $$
 
-Since the number of susceptible people is hard to determine and depends on the population, lockdown measures, social distancing etc, we take a different approach to estimate $R_{0}$ as mentioned in Ref $1$. Let us denote $\Delta X(t) := X(t) - X(t-1)$ for $X=I, R, D$. Now we define,
+Since the number of susceptible people is hard to determine and depends on the population, lockdown measures, social distancing etc, we take a different approach to estimate $R_{0}$ as mentioned in Ref $1$. 
+Let us denote $\Delta X(t) := X(t) - X(t-1)$ for $X=I, R, D$. Now we define,
 $$
 \begin{aligned}
 C\Delta X(T) := \sum_{t=1}^{T} \Delta X(t) \textit{,     and  }\\ 
@@ -118,7 +125,8 @@ C\Delta X(T) := \sum_{t=1}^{T} \Delta X(t) \textit{,     and  }\\
 \end{aligned}
 $$
 
-Here C stands for cumulative. Using the approximation $S(t-1) \approx N$ (true if susceptible population is much less than the population of the country), we can get 
+Here C stands for cumulative. Using the approximation $S(t-1) \approx N$ 
+(true if susceptible population is much less than the population of the country), we can get 
 $$
 \begin{aligned}
 R_{0} = \frac{\alpha}{\beta + \gamma} = \frac{I(t) - I(t-1) + R(t) - R(t-1) + D(t) - D(t-1)}{R(t) - R(t-1) + D(t) - D(t-1)}.
@@ -157,7 +165,9 @@ Similarly, the case fatality rate ($\hat{\beta}$) and case recovery rate ($\hat{
  
  
 ### 3.2. Continuous model
-In the continuous, the number of people in each class is a function of conitnuous time. So S(t) denotes the susceptible people at a time t. The mean-field kinetics of the SIRD epidemic evolution is described by the following system of differential equations: 
+In the continuous, the number of people in each class is a function of conitnuous time. 
+So S(t) denotes the susceptible people at a time t. The mean-field kinetics of the SIRD 
+epidemic evolution is described by the following system of differential equations: 
 
 $$
 \begin{aligned}
@@ -170,6 +180,8 @@ $$
 
 
 with  initial  condition  $[S(t_{0}),I(t_{0}),R(t_{0}),D(t_{0})]$ for  some  initial  time $t_{0}$.   The parameter $\alpha$ is the infection rate, i.e.  the probability per unit time that a susceptible individual contracts the disease when entering in contact with an infected person.  The parameters $\beta$ and $\gamma$ denote, respectively, the recovery and death rates. This scheme has good chances to capture at least the gross features of the full time course of the outbreak.
+
+
 
 ![SIRD model](SIRD.png){Above figures shows SIRD model classes and change per unit time shown above arrows.}
 
@@ -184,7 +196,8 @@ We first use the discrete model to find these parameters and predict time series
 country = "Germany" #Country chosen
 
 #Extract country data from countries data
-germany_cnf_melt = confirmed_countries_melt[which(confirmed_countries_melt$Country.Region == country), ]
+germany_cnf_melt = 
+  confirmed_countries_melt[which(confirmed_countries_melt$Country.Region == country), ]
 
 #Extract confirmed number  as a vector
 germany_cnf = germany_cnf_melt$value
@@ -199,7 +212,8 @@ germany_cum_delta_cnf = cumsum(germany_delta_cnf)
 
 
 
-germany_deaths_melt = deaths_countries_melt[which(deaths_countries_melt$Country.Region == country), ]
+germany_deaths_melt = 
+  deaths_countries_melt[which(deaths_countries_melt$Country.Region == country), ]
 
 #Extract deaths number as a vector
 germany_deaths = germany_deaths_melt$value
@@ -214,7 +228,8 @@ germany_cum_delta_deaths = cumsum(germany_delta_deaths)
 
 
 #Extract germany data from countries recovered data
-germany_recovered_melt = recovered_countries_melt[which(recovered_countries_melt$Country.Region == country), ]
+germany_recovered_melt = 
+  recovered_countries_melt[which(recovered_countries_melt$Country.Region == country), ]
 
 #Extract recovered number as a vector
 germany_recovered = germany_recovered_melt$value
@@ -249,7 +264,11 @@ We then use different time windows to estimate the time evolution of these param
 ###ESTIMATING CASE FATALITY RATIO
 
 #Making data frame of cumulative data
-germany_cum_data_full = data.frame(delta_inf= germany_delta_inf, cum_delta_inf=germany_cum_delta_inf, delta_recovered = germany_delta_recovered, cum_delta_recovered= germany_cum_delta_recovered, delta_deaths = germany_delta_deaths, cum_delta_deaths=germany_cum_delta_deaths)
+germany_cum_data_full = 
+  data.frame(delta_inf= germany_delta_inf, cum_delta_inf=germany_cum_delta_inf, 
+  delta_recovered = germany_delta_recovered, 
+  cum_delta_recovered= germany_cum_delta_recovered, delta_deaths = germany_delta_deaths, 
+  cum_delta_deaths=germany_cum_delta_deaths)
 
 
 ##VARY THE NUMBER OF DAYS CHOSEN FOR ANALYSIS
@@ -274,18 +293,22 @@ germany_cum_data = germany_cum_data_full[1:days, ]
 
 
 #fitting a linear model for case fatality ratio
-germany_gamma <- lm(cum_delta_deaths ~ cum_delta_inf  -1  , data=germany_cum_data)  # build linear regression model on full data
+germany_gamma <- lm(cum_delta_deaths ~ cum_delta_inf-1  , data=germany_cum_data)  
+# build linear regression model on full data
 
 
 ###ESTIMATING CASE  RECOVERY RATIO
 cor(germany_cum_delta_inf, germany_cum_delta_recovered)
 #high correlation 
 #fitting a linear model for case recovery ratio
-germany_beta <- lm(cum_delta_recovered ~ cum_delta_inf -1 , data=germany_cum_data)  # build linear regression model on full data with no intercept
+germany_beta <- lm(cum_delta_recovered ~ cum_delta_inf-1 , data=germany_cum_data)  
+# build linear regression model on full data with no intercept
 
 ###ESTIMATING R0
 #fitting a linear model for case basic reproducibility number R0
-germany_R0 <- lm(cum_delta_deaths + cum_delta_recovered + cum_delta_inf  ~ I(cum_delta_recovered + cum_delta_deaths) - 1  , data=germany_cum_data)  # build linear regression model on full data
+germany_R0 <- lm(cum_delta_deaths + cum_delta_recovered + cum_delta_inf  
+                 ~ I(cum_delta_recovered + cum_delta_deaths)-1  , data=germany_cum_data)  
+# build linear regression model on full data
 
 
 ##Storing estimations and conf intervals
@@ -317,9 +340,15 @@ R0_data = rbind(R0_data, R0_row)
 We plot plot the estimates and the corresponding 99% confidence intervals  for $R_{0}, \hat{\beta}, \hat{\gamma}$ as below. 
 
 ```{r }
-ggplot(R0_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab("R0") + ggtitle("Germany: R0 estimate evolution ")
-ggplot(beta_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab("case recovery ratio") + ggtitle("Germany: case recovery ratio estimate evolution ")
-ggplot(gamma_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab(" case fatality ratio") + ggtitle(" Germany: case fatality ratio estimate evolution ")
+ggplot(R0_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + 
+  geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + 
+  ylab("R0") + ggtitle("Germany: R0 estimate evolution ")
+ggplot(beta_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + 
+  geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + 
+  ylab("case recovery ratio") + ggtitle("Germany: case recovery ratio estimate evolution ")
+ggplot(gamma_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + 
+  geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + 
+  ylab(" case fatality ratio") + ggtitle(" Germany: case fatality ratio estimate evolution ")
 
 ```
 
@@ -337,10 +366,12 @@ Since $R_{0}$ is estimated by a linear model, for curiosity we carry out some di
 R0_predict <- cbind(germany_cum_data, predict(germany_R0, interval = 'confidence'))
 R0_prediction = predict(germany_R0)
 # plot the points (actual observations), regression line, and confidence interval
-p <- ggplot(R0_predict, aes(cum_delta_recovered + cum_delta_deaths, cum_delta_recovered + cum_delta_deaths + cum_delta_inf))
+p <- ggplot(R0_predict, aes(cum_delta_recovered + cum_delta_deaths, cum_delta_recovered + 
+                              cum_delta_deaths + cum_delta_inf))
 p <- p + geom_point()
 p <- p + geom_line(aes(cum_delta_deaths + cum_delta_recovered, R0_prediction))
-p <- p + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + ggtitle("Germany: Fitted R0 line and  actual data")
+p <- p + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + 
+  ggtitle("Germany: Fitted R0 line and  actual data")
 p
 
 
@@ -362,7 +393,8 @@ N <- 830000
 
 ###edit 1: use different boundary condition
 ###init <- c(S = N-1, I = 1, R = 0)
-init <- c(S = N-Infected[1] - Recovered[1] - Deaths[1], I = Infected[1], R = Recovered[1], D = Deaths[1])
+init <- c(S = N-Infected[1] - Recovered[1] - Deaths[1], 
+          I = Infected[1], R = Recovered[1], D = Deaths[1])
 ```
 
 Then, we define the differential changes in the quantities with respect to time.  
@@ -382,7 +414,8 @@ SIR <- function(time, state, parameters) {
 }
 ```
 
-Then we define an optimizer to find the optimum parameters to fit the confirmed cases curve with an initial guess. For this we also define a misfit function which is a simple L2 error function. The code is given below. 
+Then we define an optimizer to find the optimum parameters to fit the confirmed cases curve with an initial guess. 
+For this we also define a misfit function which is a simple L2 error function. The code is given below. 
 
 ```{r}
 RSS.SIR <- function(parameters) {
@@ -416,7 +449,8 @@ fit <- data.frame(ode(y = init, times = t, func = SIR, parms = Opt_par))
 predict <- fit$I + fit$D + fit$R
 plot(t, predict, col="green", xlab="Days since March 11", ylab="Confirmed cases")  
 lines(day, Confirmed, col="red")
-title("Germany: Green is confirmed cases predicted by our model, red is actual data.")
+title(main=list("Germany: Green is confirmed cases predicted by our model, red is actual data.",
+                cex=1, col="black", font=.5))
 ```
 
 
@@ -462,7 +496,8 @@ germany_cum_delta_deaths = cumsum(germany_delta_deaths)
 
 
 #Extract germany data from countries recovered data
-germany_recovered_melt = recovered_countries_melt[which(recovered_countries_melt$Country.Region == country), ]
+germany_recovered_melt = 
+  recovered_countries_melt[which(recovered_countries_melt$Country.Region == country), ]
 
 #Extract recovered number as a vector
 germany_recovered = germany_recovered_melt$value
@@ -522,38 +557,46 @@ germany_cum_data = germany_cum_data_full[1:days, ]
 
 
 #fitting a linear model for case fatality ratio
-germany_gamma <- lm(cum_delta_deaths ~ cum_delta_inf  -1  , data=germany_cum_data)  # build linear regression model on full data
+germany_gamma <- lm(cum_delta_deaths ~ cum_delta_inf  -1  , data=germany_cum_data)  
+# build linear regression model on full data
 
 
 ###ESTIMATING CASE  RECOVERY RATIO
 cor(germany_cum_delta_inf, germany_cum_delta_recovered)
 #high correlation 
 #fitting a linear model for case recovery ratio
-germany_beta <- lm(cum_delta_recovered ~ cum_delta_inf -1 , data=germany_cum_data)  # build linear regression model on full data with no intercept
+germany_beta <- lm(cum_delta_recovered ~ cum_delta_inf -1 , data=germany_cum_data)  
+# build linear regression model on full data with no intercept
 
 ###ESTIMATING R0
 #fitting a linear model for case basic reproducibility number R0
-germany_R0 <- lm(cum_delta_deaths + cum_delta_recovered + cum_delta_inf  ~ I(cum_delta_recovered + cum_delta_deaths) - 1  , data=germany_cum_data)  # build linear regression model on full data
+germany_R0 <- lm(cum_delta_deaths + cum_delta_recovered + cum_delta_inf  
+                 ~ I(cum_delta_recovered + cum_delta_deaths) - 1  , data=germany_cum_data)  
+# build linear regression model on full data
 
 
 ##Storing estimations and conf intervals
 
 conf = confint(germany_gamma)
-gamma_row <- list(est = summary(germany_gamma)$coefficients[1], lwr = conf[1], upr = conf[2])
+gamma_row <- 
+  list(est = summary(germany_gamma)$coefficients[1], 
+       lwr = conf[1], upr = conf[2])
 
 
 gamma_data = rbind(gamma_data, gamma_row)
 
 
 conf = confint(germany_beta)
-beta_row <- list(est = summary(germany_beta)$coefficients[1], lwr = conf[1], upr = conf[2])
+beta_row <- 
+  list(est = summary(germany_beta)$coefficients[1], lwr = conf[1], upr = conf[2])
 
 
 beta_data = rbind(beta_data, beta_row)
 
 
 conf = confint(germany_R0)
-R0_row <- list(est = summary(germany_R0)$coefficients[1], lwr = conf[1], upr = conf[2])
+R0_row <- 
+  list(est = summary(germany_R0)$coefficients[1], lwr = conf[1], upr = conf[2])
 
 
 R0_data = rbind(R0_data, R0_row)
@@ -565,13 +608,20 @@ R0_data = rbind(R0_data, R0_row)
 We plot plot the estimates and the corresponding 99% confidence intervals  for $R_{0}, \hat{\beta}, \hat{\gamma}$ as below. 
 
 ```{r echo=FALSE}
-ggplot(R0_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab("R0") + ggtitle("India:R0 estimate evolution ")
-ggplot(beta_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab("case recovery ratio") + ggtitle("India: case recovery ratio estimate evolution ")
-ggplot(gamma_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab(" case fatality ratio") + ggtitle("India: case fatality ratio estimate evolution ")
+ggplot(R0_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + 
+  geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + 
+  ylab("R0") + ggtitle("India:R0 estimate evolution ")
+ggplot(beta_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + 
+  geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + 
+  ylab("case recovery ratio") + ggtitle("India: case recovery ratio estimate evolution ")
+ggplot(gamma_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + 
+  geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + 
+  ylab(" case fatality ratio") + ggtitle("India: case fatality ratio estimate evolution ")
 
 ```
 
-From these, we can see that the $R_{0}$ for India has come down from 10.6 to 4.09 (99% CI : [3.94 4.25]). Thus India is quite far away from the end of the epidemic. Note that if $R_{0} < 1$, the disease stops spreading. The case recovery ratio is going up and has reached approximately 0.26 while the case fatality ratio is about 0.041.   
+From these, we can see that the $R_{0}$ for India has come down from 10.6 to 4.09 (99% CI : [3.94 4.25]). 
+Thus India is quite far away from the end of the epidemic. Note that if $R_{0} < 1$, the disease stops spreading. The case recovery ratio is going up and has reached approximately 0.26 while the case fatality ratio is about 0.041.   
  
 
 
@@ -585,10 +635,12 @@ Since $R_{0}$ is estimated by a linear model, for curiosity we carry out some di
 R0_predict <- cbind(germany_cum_data, predict(germany_R0, interval = 'confidence'))
 R0_prediction = predict(germany_R0)
 # plot the points (actual observations), regression line, and confidence interval
-p <- ggplot(R0_predict, aes(cum_delta_recovered + cum_delta_deaths, cum_delta_recovered + cum_delta_deaths + cum_delta_inf))
+p <- ggplot(R0_predict, aes(cum_delta_recovered + cum_delta_deaths, 
+                            cum_delta_recovered + cum_delta_deaths + cum_delta_inf))
 p <- p + geom_point()
 p <- p + geom_line(aes(cum_delta_deaths + cum_delta_recovered, R0_prediction))
-p <- p + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + ggtitle("Fitted R0 line and  actual data for India")
+p <- p + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + 
+  ggtitle("Fitted R0 line and  actual data for India")
 p
 
 
@@ -611,7 +663,8 @@ N <- 1000000
 
 ###edit 1: use different boundary condition
 ###init <- c(S = N-1, I = 1, R = 0)
-init <- c(S = N-Infected[1] - Recovered[1] - Deaths[1], I = Infected[1], R = Recovered[1], D = Deaths[1])
+init <- 
+  c(S = N-Infected[1] - Recovered[1] - Deaths[1], I = Infected[1], R = Recovered[1], D = Deaths[1])
 ```
 
 
@@ -645,7 +698,7 @@ lower = c(0, 0, 0)
 upper = c(10, 1, 1)  ###limit box for parameters for L-BFGS-B
 
 ### edit: get a good starting condition
-#mod <- nls(Infected ~ a*exp(b*day),            start = list(a = Infected[20],  b = (1/20)*log(Infected[40]/Infected[40])))
+#mod <- nls(Infected ~ a*exp(b*day),  start = list(a = Infected[20],  b = (1/20)*log(Infected[40]/Infected[40])))
 #optimsstart <- c(2,1)*coef(mod)[2]
 
 optimsstart <- c(0.7, 0.4,  0.2) #initial guess for parameters
@@ -667,7 +720,8 @@ fit <- data.frame(ode(y = init, times = t, func = SIR, parms = Opt_par))
 predict <- fit$I + fit$D + fit$R
 plot(t, predict, col="green", xlab="Days since March 26", ylab="Confirmed cases")  
 lines(day, Confirmed, col="red")
-title("Green is confirmed cases predicted by our model for India, red is actual data.")
+title(main=list("Green is confirmed cases predicted by our model for India, red is actual data",
+                cex=1, col="black", font=.5))
 ```
 
 

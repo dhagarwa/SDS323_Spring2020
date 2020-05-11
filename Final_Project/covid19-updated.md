@@ -266,7 +266,8 @@ the required vectors **C****Δ****X**(*T*) for *X* = *I*, *R*, *D*.
     country = "Germany" #Country chosen
 
     #Extract country data from countries data
-    germany_cnf_melt = confirmed_countries_melt[which(confirmed_countries_melt$Country.Region == country), ]
+    germany_cnf_melt = 
+      confirmed_countries_melt[which(confirmed_countries_melt$Country.Region == country), ]
 
     #Extract confirmed number  as a vector
     germany_cnf = germany_cnf_melt$value
@@ -281,7 +282,8 @@ the required vectors **C****Δ****X**(*T*) for *X* = *I*, *R*, *D*.
 
 
 
-    germany_deaths_melt = deaths_countries_melt[which(deaths_countries_melt$Country.Region == country), ]
+    germany_deaths_melt = 
+      deaths_countries_melt[which(deaths_countries_melt$Country.Region == country), ]
 
     #Extract deaths number as a vector
     germany_deaths = germany_deaths_melt$value
@@ -296,7 +298,8 @@ the required vectors **C****Δ****X**(*T*) for *X* = *I*, *R*, *D*.
 
 
     #Extract germany data from countries recovered data
-    germany_recovered_melt = recovered_countries_melt[which(recovered_countries_melt$Country.Region == country), ]
+    germany_recovered_melt = 
+      recovered_countries_melt[which(recovered_countries_melt$Country.Region == country), ]
 
     #Extract recovered number as a vector
     germany_recovered = germany_recovered_melt$value
@@ -328,7 +331,11 @@ these parameters.
     ###ESTIMATING CASE FATALITY RATIO
 
     #Making data frame of cumulative data
-    germany_cum_data_full = data.frame(delta_inf= germany_delta_inf, cum_delta_inf=germany_cum_delta_inf, delta_recovered = germany_delta_recovered, cum_delta_recovered= germany_cum_delta_recovered, delta_deaths = germany_delta_deaths, cum_delta_deaths=germany_cum_delta_deaths)
+    germany_cum_data_full = 
+      data.frame(delta_inf= germany_delta_inf, cum_delta_inf=germany_cum_delta_inf, 
+      delta_recovered = germany_delta_recovered, 
+      cum_delta_recovered= germany_cum_delta_recovered, delta_deaths = germany_delta_deaths, 
+      cum_delta_deaths=germany_cum_delta_deaths)
 
 
     ##VARY THE NUMBER OF DAYS CHOSEN FOR ANALYSIS
@@ -353,18 +360,22 @@ these parameters.
 
 
     #fitting a linear model for case fatality ratio
-    germany_gamma <- lm(cum_delta_deaths ~ cum_delta_inf  -1  , data=germany_cum_data)  # build linear regression model on full data
+    germany_gamma <- lm(cum_delta_deaths ~ cum_delta_inf-1  , data=germany_cum_data)  
+    # build linear regression model on full data
 
 
     ###ESTIMATING CASE  RECOVERY RATIO
     cor(germany_cum_delta_inf, germany_cum_delta_recovered)
     #high correlation 
     #fitting a linear model for case recovery ratio
-    germany_beta <- lm(cum_delta_recovered ~ cum_delta_inf -1 , data=germany_cum_data)  # build linear regression model on full data with no intercept
+    germany_beta <- lm(cum_delta_recovered ~ cum_delta_inf-1 , data=germany_cum_data)  
+    # build linear regression model on full data with no intercept
 
     ###ESTIMATING R0
     #fitting a linear model for case basic reproducibility number R0
-    germany_R0 <- lm(cum_delta_deaths + cum_delta_recovered + cum_delta_inf  ~ I(cum_delta_recovered + cum_delta_deaths) - 1  , data=germany_cum_data)  # build linear regression model on full data
+    germany_R0 <- lm(cum_delta_deaths + cum_delta_recovered + cum_delta_inf  
+                     ~ I(cum_delta_recovered + cum_delta_deaths)-1  , data=germany_cum_data)  
+    # build linear regression model on full data
 
 
     ##Storing estimations and conf intervals
@@ -394,15 +405,21 @@ these parameters.
 We plot plot the estimates and the corresponding 99% confidence
 intervals for $R\_{0}, \\hat{\\beta}, \\hat{\\gamma}$ as below.
 
-    ggplot(R0_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab("R0") + ggtitle("Germany: R0 estimate evolution ")
+    ggplot(R0_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + 
+      geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + 
+      ylab("R0") + ggtitle("Germany: R0 estimate evolution ")
 
 ![](covid19-updated_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
-    ggplot(beta_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab("case recovery ratio") + ggtitle("Germany: case recovery ratio estimate evolution ")
+    ggplot(beta_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + 
+      geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + 
+      ylab("case recovery ratio") + ggtitle("Germany: case recovery ratio estimate evolution ")
 
 ![](covid19-updated_files/figure-markdown_strict/unnamed-chunk-5-2.png)
 
-    ggplot(gamma_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + ylab(" case fatality ratio") + ggtitle(" Germany: case fatality ratio estimate evolution ")
+    ggplot(gamma_data, aes(ndays, est)) + geom_point() + geom_line(aes(ndays, est)) + 
+      geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + xlab("Number of days since Jan 22") + 
+      ylab(" case fatality ratio") + ggtitle(" Germany: case fatality ratio estimate evolution ")
 
 ![](covid19-updated_files/figure-markdown_strict/unnamed-chunk-5-3.png)
 
@@ -426,10 +443,12 @@ because *R*<sub>0</sub> changes with time.
     R0_predict <- cbind(germany_cum_data, predict(germany_R0, interval = 'confidence'))
     R0_prediction = predict(germany_R0)
     # plot the points (actual observations), regression line, and confidence interval
-    p <- ggplot(R0_predict, aes(cum_delta_recovered + cum_delta_deaths, cum_delta_recovered + cum_delta_deaths + cum_delta_inf))
+    p <- ggplot(R0_predict, aes(cum_delta_recovered + cum_delta_deaths, cum_delta_recovered + 
+                                  cum_delta_deaths + cum_delta_inf))
     p <- p + geom_point()
     p <- p + geom_line(aes(cum_delta_deaths + cum_delta_recovered, R0_prediction))
-    p <- p + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + ggtitle("Germany: Fitted R0 line and  actual data")
+    p <- p + geom_ribbon(aes(ymin=lwr,ymax=upr), alpha=0.5) + 
+      ggtitle("Germany: Fitted R0 line and  actual data")
     p
 
 ![](covid19-updated_files/figure-markdown_strict/unnamed-chunk-6-1.png)
@@ -451,7 +470,8 @@ We ignore the initial data because of noisiness and low scale testing.
 
     ###edit 1: use different boundary condition
     ###init <- c(S = N-1, I = 1, R = 0)
-    init <- c(S = N-Infected[1] - Recovered[1] - Deaths[1], I = Infected[1], R = Recovered[1], D = Deaths[1])
+    init <- c(S = N-Infected[1] - Recovered[1] - Deaths[1], 
+              I = Infected[1], R = Recovered[1], D = Deaths[1])
 
 Then, we define the differential changes in the quantities with respect
 to time.
@@ -500,7 +520,8 @@ Once we have optimized, we can predict the case evolution as follows.
     predict <- fit$I + fit$D + fit$R
     plot(t, predict, col="green", xlab="Days since March 11", ylab="Confirmed cases")  
     lines(day, Confirmed, col="red")
-    title("Germany: Green is confirmed cases predicted by our model, red is actual data.")
+    title(main=list("Germany: Green is confirmed cases predicted by our model, red is actual data.",
+                    cex=1, col="black", font=.5))
 
 ![](covid19-updated_files/figure-markdown_strict/unnamed-chunk-10-1.png)
 
